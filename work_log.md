@@ -55,3 +55,7 @@ https://www.stereolabs.com/docs/tutorials/positional-tracking/
 
 ## 0411
 ### extract trunk and do statistic analysis and HOG
+### map into 3D coordinate
+https://github.com/IntelRealSense/librealsense/wiki/Projection-in-RealSense-SDK-2.0?fbclid=IwAR3gogVZe824YUps88Dzp02AN_XzEm1BDb0UbmzfoYvn1qDFb7KzbIz9twU#intrinsic-camera-parameters  
+http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/CameraInfo.html  
+http://nicolas.burrus.name/index.php/Research/KinectCalibration  
