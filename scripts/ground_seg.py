@@ -10,6 +10,7 @@ else:
 import csv
 import numpy as np
 import time
+np.set_printoptions(threshold=sys.maxsize)
 
 '''plot tool'''
 import matplotlib.pyplot as plt
@@ -21,14 +22,15 @@ import matplotlib.ticker as ticker
 '''image tool'''
 import cv2
 import statistics # as sta
+import myUtils
 
 '''load file'''
 npDepth = []
-npDepth = np.load(file_path+"p_1_middle.npy")
+npDepth = np.load(file_path+"p_1_far.npy")
 npBGR = []
-npBGR = np.load(file_path+"p_1_middle_c.npy")
-cv2.imshow("color", npBGR)
-cv2.waitKey(500)
+# npBGR = np.load(file_path+"p_1_far_c.npy")
+# cv2.imshow("color", npBGR)
+# cv2.waitKey(500)
 
 '''filter out 6m'''
 npDepthF = cv2.convertScaleAbs(npDepth, alpha=0.04) # 6m
@@ -66,6 +68,8 @@ npPointY = npPointY.dot(npDepth)/ fy_d * (-1) + 360
 npPointY = npPointY.astype('float16')
 
 '''depth segmentation'''
+npHeight = np.copy(npPointY)
+height,width = npHeight.shape
 color_seq = {'brown': (0,130,210), 'red':(0,0,255),'yellow':(22,220,220),
                 'green':(0,255,0),'blue':(255,0,0),'black':(0,0,0)}
 npHeight_seg = np.zeros((npHeight.shape[0],npHeight.shape[1],3))
@@ -82,8 +86,6 @@ cv2.imshow('height segmentation', npHeight_seg)
 cv2.waitKey(500)
 
 '''ground height statistics'''
-npHeight = np.copy(npPointY)
-height,width = npHeight.shape
 ground_height = np.array([])
 layer = 20
 ground_height = npHeight[height-layer*10: height][npHeight[height-layer*10: height]!=360]
@@ -92,6 +94,9 @@ ground_height = ground_height.astype('float64')
 meanGrass = statistics.mean(ground_height)
 medianGrass = statistics.median(ground_height)
 stdevGrass = statistics.stdev(ground_height)
+
+myUtils.write2CSV(1,[str(meanGrass), str(medianGrass), str(stdevGrass), 
+                        str(np.min(ground_height)), str(np.max(ground_height))])
 
 thres = 80 #medianGrass
 
@@ -137,26 +142,30 @@ cv2.imshow('ground height statistics',npDepth_seg_c)
 cv2.waitKey(500)
 
 '''plot hog'''
-HOG_height = np.zeros(1000)
+HOG_height = np.zeros(2000)
 for i in range(height-layer*10, height):
     for j in range(width):
         if npHeight[i][j]!=360:
-            index = int(npHeight[i][j])
+            index = int(npHeight[i][j])+1000
+            if index<0:
+                print("smaller than 0")
             HOG_height[index] = HOG_height[index]+1
 fig = plt.subplots(figsize=(13,5))
 plt.plot(HOG_height, linewidth=1.0, color='#008b8b', label='right')
-x_ticks = np.arange(-2000,1,250)
-# plt.xlim(0,1000)
-# plt.xticks(x_ticks)
 plt.axvline(thres, color='r')
 plt.title('Histogram of height')
 plt.show()
+
+HOG_height = HOG_height.astype('str')
+myUtils.write2CSV("histogram",HOG_height.tolist())
+
 
 '''threshold the ground'''
 npHeight = npHeight.astype('float32')
 ret, npHeight = cv2.threshold(npHeight, thres, 255, cv2.THRESH_BINARY_INV) # >thres = 0
 cv2.line(npHeight, (0,height-layer*10),(640,height-layer*10),(0,0,0),3)
 cv2.imshow('binarize', npHeight)
-cv2.waitKey(0)
-
+cv2.waitKey(500)
+pic11 = np.hstack((npDepthF_color, npHeight_seg))
+    pic12 = np.hstack((pic11, npHeight))
 cv2.destroyAllWindows()

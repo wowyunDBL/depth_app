@@ -59,7 +59,16 @@ rosbag record /camera/color/image_raw/compressed /camera/depth/image_rect_raw/co
 
 rosrun rosbag_to_csv rosbag_to_csv.py
 ```
+## 0429
+```
+import myUtils
 
+# wanna save full data not like 0,...,0
+np.set_printoptions(threshold=sys.maxsize)
+
+# image in this format
+npHeight_color = npHeight_color.astype('uint8')
+```
 
 
 
