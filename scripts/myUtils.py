@@ -1,6 +1,8 @@
 #!usr/bin/env python
 import csv
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import transforms
 
 file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/"
 
@@ -25,3 +27,18 @@ def read4CSV():
 def array_broadcasting():
     a = np.array([[1,2,3,4,5],[1,2,2,2,5],[4,4,3,2,5]])
     a[np.logical_and(a>3, a!=5)]=0
+
+def matplot_transform():
+    fig, ax = plt.subplots(figsize=(10,10))
+    base = plt.gca().transData
+    rot = transforms.Affine2D().rotate_deg(135)
+    plt.scatter([0],[0],c = 'r',transform = rot + base)
+    plt.scatter([0],[1],c = 'b',transform = rot + base)
+    plt.scatter([1],[1],c = 'g',transform = rot + base)
+    plt.scatter([1],[0],c = 'orange',transform = rot + base)
+    plt.xlim(-2,2)
+    plt.ylim(-2,2)
+    plt.show()
+
+if __name__ == '__main__':
+    matplot_transform()
