@@ -201,5 +201,5 @@ if __name__ == "__main__":
     subDepth = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw", Image, cbDepth)
     subColor = rospy.Subscriber("/camera/color/image_raw", Image, cbColor)
     print("successfully initialized!")
-    print("Python version: ",sys.version)
+    # print("Python version: ",sys.version)
     rospy.spin()
