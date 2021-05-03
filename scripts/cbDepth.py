@@ -5,7 +5,9 @@ from sensor_msgs.msg import Image, CameraInfo
 import sys
 if sys.platform.startswith('linux'): # or win
     print("in linux")
-    file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/p_1_45/"
+    file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/s_2/"
+    # print(sys.path)
+import message_filters
 
 '''math tool'''
 import csv
@@ -35,7 +37,7 @@ def msg2CV(msg):
         print(e)
         return
 
-def fnGroundSeg(npDepth, file_index):
+def fnGroundSeg(npColor, npDepth, file_index):
     '''filter out 6m'''
     npDepthF = cv2.convertScaleAbs(npDepth, alpha=0.04) # 6m
     npDepthF_color = cv2.applyColorMap(npDepthF, cv2.COLORMAP_JET)
@@ -99,10 +101,10 @@ def fnGroundSeg(npDepth, file_index):
     medianGrass = statistics.median(ground_height)
     stdevGrass = statistics.stdev(ground_height)
 
-    myUtils.write2CSV(1,[str(meanGrass), str(medianGrass), str(stdevGrass), 
+    myUtils.write2CSV("statistics",[str(meanGrass), str(medianGrass), str(stdevGrass), 
                             str(np.min(ground_height)), str(np.max(ground_height))])
 
-    thres = 80 #medianGrass
+    thres = 5 #medianGrass
 
     '''visualize statistics results'''
     npDepth_seg_c = np.copy(npDepth_seg)
@@ -149,52 +151,84 @@ def fnGroundSeg(npDepth, file_index):
     HOG_height = np.zeros(2000)
     for i in range(height-layer*10, height):
         for j in range(width):
-            if npHeight[i][j]!=360:
+            if (npHeight[i][j]!=360 or npHeight[i][j]<80):
                 index = int(npHeight[i][j])+1000
                 if index<0:
                     index = 0
                 HOG_height[index] = HOG_height[index]+1
     HOG_height = HOG_height.astype('str')
-    myUtils.write2CSV("histogram",HOG_height.tolist())
+    myUtils.write2CSV_column("histogram",HOG_height.tolist())
 
     '''threshold the ground'''
     npHeight = npHeight.astype('float32')
     ret, npHeight = cv2.threshold(npHeight, thres, 255, cv2.THRESH_BINARY_INV) # >thres = 0
     npHeight_c = cv2.cvtColor(npHeight,cv2.COLOR_GRAY2RGB)
-    cv2.line(npHeight, (0,height-layer*10),(640,height-layer*10),(0,0,0),3)
+    cv2.line(npHeight_c, (0,height-layer*10),(640,height-layer*10),(0,0,0),3)
     npHeight_c = npHeight_c.astype('uint8')
-    
-    pic11 = np.hstack((npHeight_seg, npDepth_seg_c))
-    pic12 = np.hstack((pic11, npHeight_c))
-    # pic13 = np.hstack((pic12, npHeight_seg))
-    # pic21 = np.hstack((npHeight_seg, npHeight_c))
-    # pic3 = np.vstack((pic21, pic11))
 
-    cv2.imwrite(file_path + file_index + '.jpg', pic12)
-    cv2.imshow('binarize', pic12)
+    npColorMask = np.bitwise_or(npColor, npHeight_c)
+    
+    pic11 = np.hstack((npDepthF_color, npDepth_seg_c))
+    # pic12 = np.hstack((pic11, npHeight_c))
+    # pic13 = np.hstack((pic12, npHeight_seg))
+    pic21 = np.hstack((npHeight_seg, npHeight_c))
+    pic31 = np.hstack((npColor, npColorMask))
+    pic3 = np.vstack((pic11, pic21))
+    pic4 = np.vstack((pic3, pic31))
+
+    cv2.imwrite(file_path + str(file_index) + '.jpg', pic4)
+    cv2.imshow('binarize', pic4)
     cv2.waitKey(1)
     # cv2.destroyAllWindows()
+
+class Synchronize:
+    def __init__(self):
+        self.msgColor = None
+        self.msgDepth = None
+        self.flagColor = False
+        self.flagDepth = False
+    def colorIn(self, color):
+        self.msgColor = color
+        self.flagColor = True
+    def depthIn(self, depth, index):
+        self.msgDepth = depth
+        self.flagDepth = True
+        self.index = index
+    def show(self):
+        if (self.flagDepth and self.flagColor) == True:
+            print("yes")
+            self.imgColor = msg2CV(self.msgColor)
+            self.imgDepth = msg2CV(self.msgDepth)
+            fnGroundSeg(self.imgColor, self.imgDepth, self.index)
+        else: 
+            print("not yet")
+
+synchronizer = Synchronize()
 
 index = 0
 
 def cbDepth(msg):
-    global index, file_path
-    if index%2 == 0:
-        image = msg2CV(msg)
-        cv2.imshow('raw image', image)
-        cv2.waitKey(1)
-        np.save(file_path + str(int(index/2)), image)
-        fnGroundSeg(image, str(int(index/2)))
+    global index, file_path, synchronizer
+    
+    if index%10 == 0:
+        print("receive depth!")
+        synchronizer.depthIn(msg, index/10)
+        synchronizer.show()
+        # image = msg2CV(msg)
+        # cv2.imshow('raw image', image)
+        # cv2.waitKey(1)
+        # np.save(file_path + str(int(index/10)), image)
+        # fnGroundSeg(image, str(int(index/10)))
 
     index = index+1
-globalCount = 0
+
 def cbColor(msg):
-    global index, file_path, globalCount
-    globalCount = globalCount+1
-    print(globalCount)
-    if index%2 == 0:
-        colorImg = msg2CV(msg)
-        np.save(file_path + str(int(index/2))+'_c', colorImg)
+    global file_path, synchronizer
+    print("receive color!")
+    synchronizer.colorIn(msg)
+    # if index%10 == 0:
+        # colorImg = msg2CV(msg)
+        # cv2.imwrite(file_path + str(int(index/10)) + '_c.jpg', pic12)
 
 if __name__ == "__main__":
     rospy.init_node("depthHandler", anonymous=True)
@@ -202,4 +236,5 @@ if __name__ == "__main__":
     subColor = rospy.Subscriber("/camera/color/image_raw", Image, cbColor)
     print("successfully initialized!")
     # print("Python version: ",sys.version)
+
     rospy.spin()
