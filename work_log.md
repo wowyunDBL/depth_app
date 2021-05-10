@@ -66,3 +66,16 @@ to collect useful function in a file
 ### Check the Python version in the script: sys
 import sys
 print(sys.version)
+
+## 0510
+### Subtract tree truck by fusing Depth and Height information
+```
+.
+├── ground_subtr_npy.ipynb \\Detailed flow
+├── low_pass.ipynb \\temporal filter
+├── mark_obj.ipynb \\test the single depth image object
+├── transformation.ipynb \\self-made constant-height plain image
+└── tree_subtr_npy.ipynb
+```
+
+### trunk tracking

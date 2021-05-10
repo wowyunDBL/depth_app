@@ -66,8 +66,12 @@ import myUtils
 # wanna save full data not like 0,...,0
 np.set_printoptions(threshold=sys.maxsize)
 
-# image in this format
+# image in this format: image must be converted to 8-bit per pixel
 npHeight_color = npHeight_color.astype('uint8')
+
+# in Jupyter notebook
+# if want to expand list
+print(*a)
 ```
 
 

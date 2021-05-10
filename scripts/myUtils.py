@@ -62,6 +62,20 @@ def read4CSV1():
     plt.legend()
     plt.show()
 
+def readNumpy():
+    imu_roll = np.load("/home/ncslaber/imu.npy")
+    plt.title('imu data')
+    plt.xlabel('msgs')
+    plt.ylabel('pitch (rad)')
+    plt.plot(imu_roll, linewidth = 2.0)
+    plt.show()
+
+
+def CVshow():
+    cv2.imshow("filtered", npDepthF_color)
+    cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    cv2.destroyWindow("raw")
 
 def array_broadcasting():
     a = np.array([[1,2,3,4,5],[1,2,2,2,5],[4,4,3,2,5]])
@@ -80,5 +94,31 @@ def matplot_transform():
     #ax.axis('equal')
     plt.show()
 
+def HOG():
+    HOG_all = np.zeros(65536)
+    for i in range(480):
+        for j in range(640):
+            index = npDepth[i][j]
+            HOG_all[index] = HOG_all[index]+1
+    plt.plot(HOG_all)
+
+def cvUtils():
+    cv2.line(npDepth_copy, (0,380),(640,380),(0,0,0),3)
+
+def plot3D_color_surface():
+    '''plot 3D color surface'''
+    # %matplotlib qt
+    fig3, ax3 = plt.subplots(subplot_kw={"projection": "3d"})
+    y = np.linspace(0,479,480) # data of [:x] column
+    x = np.linspace(0,639,640) # data of [x:] row
+    X,Y = np.meshgrid(x,y)
+    initial_cmap = cm.get_cmap('rainbow')
+    surf = ax3.plot_surface(X, Y, npDepthF, cmap=initial_cmap)
+    plt.title('Depth tree', fontsize='15')
+    plt.xlabel('X[pixel]', fontsize='15')
+    plt.ylabel('Y[pixel]', fontsize='15')
+    fig3.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
+
 if __name__ == '__main__':
-    read4CSV()
+    readNumpy()
