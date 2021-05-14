@@ -79,3 +79,39 @@ print(sys.version)
 ```
 
 ### trunk tracking
+
+```
+'''trunk center tracker'''
+from collections import deque
+pts = deque(maxlen=5)
+thickness = int(np.sqrt(5 / float(i + 1)) * 2.5)
+cv2.line(npTreeMask_c, pts[i - 1], pts[i], (0, 0, 255), thickness)
+```
+
+### low freq filter
+```
+if len(param_model) == 5:
+        flag = True
+        print("BD: initialize param ground!")
+        param_model = param_model/5
+        moving_avg = np.zeros_like(param_model)
+        moving_avg[param_model<=0.5]=int(0)
+        moving_avg[param_model>0.5]=int(255)
+        moving_avg = moving_avg.astype('uint8')
+        print(len(param_model))
+
+elif len(param_model) < 5:
+	print("BD: not yet initial!")
+	moving_avg = npHeight_binary
+	param_model = param_model + npHeight_binary
+	print(len(param_model))
+else: 
+        print('BD: '+str(len(param_model))+"initialized")
+        alpha=0.2
+        param_model = (1-alpha)*param_model+alpha*npHeight_binary
+        param_model = param_model.astype('uint8')
+        moving_avg = np.zeros_like(param_model)
+        moving_avg[param_model<=130]=int(0)
+        moving_avg[param_model>130]=int(255)
+```
+
