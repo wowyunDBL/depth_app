@@ -4,10 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import transforms
 
-file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/"
+file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/sta/"
 
 def write2CSV(i, data):
-    with open(file_path + "s_2/" + str(i) + '.csv', 'a+') as csvfile: # or w
+    with open(file_path + "sta/" + str(i) + '.csv', 'a+') as csvfile: # or w
         writer = csv.writer(csvfile)
         writer.writerows(np.reshape(data,(1,-1)))
 
@@ -37,8 +37,8 @@ def read4CSV():
     fig, ax = plt.subplots()
     plt.plot(npDepth_mean, 'go-', label='mean')
     plt.plot(npDepth_median, 'bo-', label='median')
-    xticks = range(0,43,10)
-    ax.xaxis.set_ticks(xticks)  
+    # xticks = range(0,43,10)
+    # ax.xaxis.set_ticks(xticks)  
     plt.title('statistics')
     plt.xlabel('frame')
     plt.ylabel('height [mm]')
@@ -48,18 +48,30 @@ def read4CSV():
 
 def read4CSV1():
     npDepth_mean = []
-    file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/p_1_45/"
-    with open(file_path + 'histogram.csv', 'r') as csvfile:
+    npDepth_median = []
+    npDepth_std = []
+    file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/sta/"
+    with open(file_path + 'statistics1.csv', 'r') as csvfile:
         rows = csv.reader(csvfile, delimiter=',')
         for row in rows:
-            npDepth_mean.append(row)
+            npDepth_mean.append(row[0])
+            npDepth_median.append(row[1])
+            npDepth_std.append(row[2])
     npDepth_mean = np.asanyarray(npDepth_mean)
+    npDepth_median = np.asanyarray(npDepth_median)
+    npDepth_std = np.asanyarray(npDepth_std)
     # print(npDepth.dtype) # U5 means string length < 5
     # print(npDepth.shape)
-    npDepth_mean = npDepth_mean.astype('int32')
-    fig, ax = plt.subplots()
-    plt.plot(npDepth_mean[:10], 'go-', label='histogram')
-    plt.legend()
+    npDepth_mean = npDepth_mean.astype('float32')
+    npDepth_median = npDepth_median.astype('float32')
+    npDepth_std = npDepth_std.astype('float32')
+    fig, ax = plt.subplots(dpi=200)
+    plt.plot(npDepth_mean, 'go-', label='mean', linewidth=2)
+    plt.plot(npDepth_median, 'ro-',label='median')
+    plt.plot(npDepth_std, 'bo-', label='std')
+    # ax.axes.yaxis.set_visible(False)
+    plt.title('Tree statistics', fontsize=25)
+    plt.legend(fontsize=20)
     plt.show()
 
 def readNumpy():
@@ -121,4 +133,4 @@ def plot3D_color_surface():
     plt.show()
 
 if __name__ == '__main__':
-    readNumpy()
+    read4CSV1()
