@@ -1,0 +1,10 @@
+<launch>
+  <node pkg="image_transport" type="republish" name="republish1" args="compressed in:=/camera/color/image_raw raw out:=/camera/color/image_raw"/>
+
+  <node pkg="image_transport" type="republish" name="republish2" args="compressedDepth in:=/camera/depth/image_rect_raw out:=/camera/depth/image_rect_raw"/>
+
+  <node pkg="image_transport" type="republish" name="republish3" args="compressedDepth in:=/camera/aligned_depth_to_color/image_raw out:=/camera/aligned_depth_to_color/image_raw"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="cam_link_broadcaster" args="0 0 0 0 0 0 1 base_link camera_link 100" />
+
+</launch>
