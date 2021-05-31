@@ -55,7 +55,7 @@ ssh ursrobot@192.168.0.1xx
 roslaunch realsense2_camera rs_camera.launch
 roslaunch depth_app comp2raw.launch
 
-rosbag record /camera/color/image_raw/compressed /camera/depth/image_rect_raw/compressed /camera/depth/color/points /camera/aligned_depth_to_color/image_raw/compressed /tf_static /tf /imu/data /husky_velocity_controller/odom /navsat/fix
+rosbag record /camera/color/image_raw/compressed /camera/depth/image_rect_raw/compressed /camera/depth/color/points /camera/aligned_depth_to_color/image_raw/compressed /tf_static /tf /imu/data /husky_velocity_controller/odom /navsat/fix /clock
 
 rosrun rosbag_to_csv rosbag_to_csv.py
 ```
@@ -74,7 +74,23 @@ npHeight_color = npHeight_color.astype('uint8')
 print(*a)
 ```
 
+## 0531
+```
+roslaunch depth_app depth2pc.launch
+roslaunch depth_app gmapping_mower.launch
+rosrun map_server map_saver -f ~/map
+rosbag info two_trees.bag
+```
+### How to set scan_height?
+DepthImageToLaserScan.h
 
+### mktime
+```
+>>> t = 1618892029713
+>>> time.strftime("%a %d %b %Y %H:%M:%S GMT", time.gmtime(t / 1000.0))
+'Tue 20 Apr 2021 04:13:49 GMT'
+
+```
 
 
 

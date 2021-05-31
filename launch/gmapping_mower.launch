@@ -1,0 +1,13 @@
+<launch>
+  <arg name="set_base_frame" default="base_footprint"/>
+  <arg name="set_odom_frame" default="odom"/>                  <!--odom-->
+  <arg name="set_map_frame"  default="map_yun"/>
+
+  <!-- Gmapping -->
+  <node pkg="gmapping" type="slam_gmapping" name="yun_2D_gmapping" output="screen">
+    <param name="base_frame" value="$(arg set_base_frame)"/>
+    <param name="odom_frame" value="$(arg set_odom_frame)"/>
+    <param name="map_frame"  value="$(arg set_map_frame)"/>
+    <rosparam command="load" file="$(find depth_app)/config/gmapping_params.yaml" />
+  </node>
+</launch>
