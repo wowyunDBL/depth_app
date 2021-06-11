@@ -90,6 +90,9 @@ DepthImageToLaserScan.h
 >>> time.strftime("%a %d %b %Y %H:%M:%S GMT", time.gmtime(t / 1000.0))
 'Tue 20 Apr 2021 04:13:49 GMT'
 
+<node pkg="tf" type="static_transform_publisher" name="cam_link_broadcaster" args="0 0 0.36 0 0 0 base_footprint camera_link 100" />
+<node pkg="tf" type="static_transform_publisher" name="cam_link_broadcaster" args="0 0 0.36 0 0 0 base_link camera_link 100" />
+
 ```
 
 
