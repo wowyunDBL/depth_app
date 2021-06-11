@@ -114,4 +114,8 @@ else:
         moving_avg[param_model<=130]=int(0)
         moving_avg[param_model>130]=int(255)
 ```
+## 0611
 
+### realsense in Gazebo
+https://github.com/IntelRealSense/realsense-ros/issues/1769
+there also a video
