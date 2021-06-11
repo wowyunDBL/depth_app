@@ -79,6 +79,7 @@ print(*a)
 roslaunch depth_app depth2pc.launch
 roslaunch depth_app gmapping_mower.launch
 rosrun map_server map_saver -f ~/map
+roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
 rosbag info two_trees.bag
 ```
 ### How to set scan_height?
@@ -90,11 +91,16 @@ DepthImageToLaserScan.h
 >>> time.strftime("%a %d %b %Y %H:%M:%S GMT", time.gmtime(t / 1000.0))
 'Tue 20 Apr 2021 04:13:49 GMT'
 
+>>> rosparam get use_sim_time
+
 <node pkg="tf" type="static_transform_publisher" name="cam_link_broadcaster" args="0 0 0.36 0 0 0 base_footprint camera_link 100" />
 <node pkg="tf" type="static_transform_publisher" name="cam_link_broadcaster" args="0 0 0.36 0 0 0 base_link camera_link 100" />
 
 ```
-
+### need install
+```
+sudo apt-get install ros-noetic-gmapping ros-noetic-navigation 
+```
 
 
 
