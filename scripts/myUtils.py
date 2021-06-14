@@ -117,6 +117,12 @@ def HOG():
 def cvUtils():
     cv2.line(npDepth_copy, (0,380),(640,380),(0,0,0),3)
 
+def timer():
+    pass
+    # import time
+    # start_time = time.time()
+    # print("----------------world coord: "+str(time.time()-start_time))
+
 def plot3D_color_surface():
     '''plot 3D color surface'''
     # %matplotlib qt
@@ -130,6 +136,48 @@ def plot3D_color_surface():
     plt.xlabel('X[pixel]', fontsize='15')
     plt.ylabel('Y[pixel]', fontsize='15')
     fig3.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
+
+def drawGPS():
+    path = '/home/anny/109-2/0618_mapExperiment/oneTree_MD/'
+    bags = [
+            path + '2021-06-13-11-31-48-navsat-fix.csv',
+            ]
+     
+
+    base = plt.gca().transData
+    rot = transforms.Affine2D().rotate_deg(92)#
+    for idx, bag in enumerate(bags):	
+        time, lng, lat = readGPS(bag)
+        import utm
+        _, _, zone, _ = utm.from_latlon(lat[0], lng[0])
+        proj = Proj(proj='utm', zone=zone, ellps='WGS84', preserve_units=False)
+        ux, uy = proj(lng, lat)
+
+    print(np.asarray(ux).shape)
+    colors = cm.rainbow(np.linspace(1, 0, np.asarray(ux).shape[0]))
+    plt.scatter(ux, uy, c=colors, transform = rot + base)
+    
+    ''' print timeStamp every 5 sec 
+    for i in range(0,319,50):
+        ax.text(ux[i]+0.6, uy[i], str(math.trunc(i/5/60))+":"+str(math.trunc(i/5%60)), fontsize=14, transform = rot + base)
+    '''
+
+    fig, ax = plt.subplots(figsize=(18, 18))
+    ax.axis('equal')
+    #plt.tight_layout()
+    plt.grid(True)
+    plt.title("GPS", fontsize=25)
+    
+    plt.yticks(fontsize=15)
+    plt.xticks(fontsize=10)
+    plt.xlim((-2778355, -2778330))
+    plt.ylim((256076, 256092))
+    #ax.xaxis.set_major_locator(FixedLocator(np.arange(352883, 352898, 1)))
+    ax.ticklabel_format(useOffset=False, style='sci')
+    #ax.yaxis.set_major_locator(FixedLocator(np.arange(2.76766**6, 2.76773**6, 0.1)))
+    # plt.savefig(path+"test_timeMarker.png")
+    
     plt.show()
 
 if __name__ == '__main__':

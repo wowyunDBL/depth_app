@@ -8,7 +8,7 @@ import sys
 if sys.platform.startswith('linux'): # or win
     print("in linux")
     # file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/p_1_45_center_try/"
-    file_path = "/home/anny/109-2/0420_treeExperiment/npy/2_gps_npy/"
+    file_path = "/home/anny/109-2/0618_mapExperiment/oneTree_MD/"
     # print(sys.path)
 # import message_filters
 
@@ -161,11 +161,11 @@ def saveCV(npDepth_binary, npHeight_binary, moving_avg, npTreeMask_c, npColor, f
 
     npTreeMask_cc = np.vstack((np.zeros((160,640, 3), dtype='uint8'),npTreeMask_c))
     npTreeMask_cc = np.hstack((npTreeMask_cc, npColor))
-    cv2.imwrite(file_path + 'result_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', npColor)
-    cv2.imwrite(file_path + 'Cstack_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', npTreeMask_cc)
+    # cv2.imwrite(file_path + 'result_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', npColor)
+    # cv2.imwrite(file_path + 'Cstack_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', npTreeMask_cc)
 
     fuse = np.hstack((npDepth_binary, npHeight_binary, moving_avg, npBinarFuse))
-    cv2.imwrite(file_path + 'Mstack_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', fuse)
+    # cv2.imwrite(file_path + 'Mstack_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', fuse)
 
 initial_GPS = False
 GPS_x = None
@@ -175,50 +175,43 @@ PointX_g = []
 PointY_g = []
 tx_g = np.array([])
 ty_g = np.array([])
+'''
 for i in range(24):#29
     for j in range(0,10,2):
-        file_path = "/home/anny/109-2/0420_treeExperiment/npy/2_gps_npy/np_"
+        # file_path = "/home/anny/109-2/0420_treeExperiment/npy/2_gps_npy/np_"
         PointX, PointY, tx, ty = np.load(file_path+str(i)+"_"+str(j)+".npy", allow_pickle=True)
         PointX_g.append(PointX)
         PointY_g.append(PointY)
         tx_g = np.append(tx_g,tx)
         ty_g = np.append(ty_g,ty)
+'''
 
 count_index = 0
 npPointXY_last = None
 npPointXY_llast = None
-def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D):
+def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D,trans,rot):
     global flag, param_model, count_init, height,width, file_path
     global CentroidTracker #,H,W
     global initial_GPS, GPS_x, GPS_y, count_index, npPointXY_last, npPointXY_llast
 
-    listener = tf.TransformListener()
+    
     
     rects = []
     height,width = npDepth.shape
-    # npColort = npColor[160:]
-    '''filter out 3m'''
-    # start_time = time.time()
     npDepthROI = npDepth[160:]
-    # npDepth_binary = fnFilterDepth(npDepthROI)
-    # print("----------------filter depth: "+str(time.time()-start_time))
-
     '''world coordinate'''
-    # start_time = time.time()
     npPointY, npPointX_2D, npPointZ_2D = fnWorldCoord(npDepthROI)
-    # print("----------------world coord: "+str(time.time()-start_time))
 
     index = np.array(range(640))
     base = np.ones(640)
-    npPointXZ = np.vstack((npPointX_2D,npPointZ_2D,base)) # notice I transform coordinate
+    npPointXZ = np.vstack((npPointX_2D,npPointZ_2D,base)) 
     npPointXZ = npPointXZ[:,npPointXZ[1,:]!=0]
     npPointXZ = npPointXZ.reshape(3,-1)
     npPointXZ = npPointXZ[:,npPointXZ[1,:]<4500]
     npPointXZ = npPointXZ.reshape(3,-1)
-    # npPointXZ = npPointXZ/1000
-    npPointXY = np.vstack((npPointXZ[1]/1000, -npPointXZ[0]/1000, npPointXZ[2]))
+    npPointXY = np.vstack((npPointXZ[1]/1000, -npPointXZ[0]/1000, npPointXZ[2]))# notice I transform coordinate
 
-    (trans,rot) = listener.lookupTransform('/odom', '/base_footprint', rospy.Time(0))
+    
     rot_m = transforms3d.quaternions.quat2mat([rot[0], rot[1], rot[2], rot[3]])
     # print("-------New data-----------------")
     # print("rotation: ", rot_m)
@@ -234,27 +227,19 @@ def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D):
     # npPointXY = np.dot(rot_m, npPointXY)
     npPointXY = np.dot(rotationM, npPointXY)
     
-    '''ROI
-    # npTreeMask = fnMasking(npTreeMask)
-    
-    npTreeMask_c = cv2.cvtColor(npTreeMask, cv2.COLOR_GRAY2BGR)
-    npTreeMask_c = cv2.addWeighted(npTreeMask_c, 0.4, npColort, (0.6), 0.0)'''
-    
-    # npDepthF_copy = np.copy(npDepthF)
-    # npDepthF_copy = cv2.cvtColor(npDepthF_copy, cv2.COLOR_GRAY2BGR)
-
     if initial_GPS is False:
         GPS_x = gps2D[0]
         GPS_Y = gps2D[1]
         initial_GPS = True
     
-    # np.save(file_path+"np_"+str(file_index/10) +'_'+str(int(file_index%10)), (npPointXY[0], npPointXY[1], tx, ty))
+    np.save(file_path+"np_"+str(file_index/10) +'_'+str(int(file_index%10)), (npPointXY[0], npPointXY[1], tx, ty))
     
     textStamp = stamp.secs + stamp.nsecs * 1e-9
     fig, ax = plt.subplots(figsize=(6, 9), dpi=100)
+    # ax.axis('equal')
     plt.grid(True)
     base = plt.gca().transData
-    rotation = transforms.Affine2D().rotate_deg(55)#92, 135
+    rotation = transforms.Affine2D().rotate_deg(92)#92, 135
     # textGPS = "["+str(math.trunc(gps2D[0]*1000%1e6))+", "+str(math.trunc(gps2D[1]*1000%1e6))+"]"
     # plt.text(gps2D[0]+0.1-GPS_x, gps2D[1]+0.1-GPS_y, textGPS, transform=rotation + base,fontsize=22)
     # ax.text(gps2D[0]-0.1, gps2D[1]+0.1, str(math.trunc(i/5/60))+":"+str(math.trunc(i/5%60)), fontsize=14, transform = rot + base)
@@ -288,8 +273,8 @@ def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D):
     # plt.scatter(gps2D[0]-GPS_x, gps2D[1]-GPS_y, c='r',transform=rotation + base, s=200, marker='*')
     # plt.scatter(tx, ty, c='r',transform=rotation + base, s=200, marker='*')
     plt.title(str(textStamp), fontsize = 25)
-    plt.xlim((-2, 3))
-    plt.ylim((-1, 13))
+    plt.xlim((-2.5, 1))
+    plt.ylim((2.5, 12))
     # plt.xlim((3, 9))
     # plt.ylim((6, 20))
     # plt.xlim((-2778360, -2778335))
@@ -297,7 +282,8 @@ def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D):
         # plt.xlim((352882,352898))
         # plt.ylim((2767708,2767718))
     ax.ticklabel_format(useOffset=False, style='sci')
-    plt.savefig(file_path+"tree_and_gps"+str(file_index/10) +'_'+str(int(file_index%10))+".png", dpi=100)
+    plt.savefig(file_path+"tree_and_odom"+str(file_index/10) +'_'+str(int(file_index%10))+".png", dpi=100)
+    print("save!")
     # np.save(file_path + 'npyXZ_' + str(int(file_index/10))+'_'+str(int(file_index%10)), npPointXZ)
     # np.save(file_path + 'npyGPS_' + str(int(file_index/10))+'_'+str(int(file_index%10)), gps2D)
         # plt.scatter(gps2D[0], gps2D[1], c='r',transform=rot + base, s=30)
@@ -320,6 +306,7 @@ class Synchronize:
         self.stamp = None
         self.flagColor = False
         self.flagDepth = False
+        self.listener = tf.TransformListener()
     def colorIn(self, color):
         self.msgColor = color
         self.flagColor = True
@@ -335,16 +322,25 @@ class Synchronize:
 
     def show(self):
         if (self.flagDepth and self.flagColor and self.flagGPS) == True:
+            print("Enter: "+str(count))
             # print("reveive both color and depth")
             self.imgColor = msg2CV(self.msgColor)
             self.imgDepth = msg2CV(self.msgDepth)
             # np.save(file_path + 'npyD_' + str(int(index/10))+'_'+str(int(index%10)), self.imgDepth)
             # np.save(file_path + 'npyC_'+ str(int(index/10))+'_'+str(int(index%10)), self.imgColor)
             #cv2.imwrite(file_path + 'c_'+str(int(index/10))+'_'+str(int(index%10)) + '.jpg', self.imgColor)
-            fnGroundSeg(self.imgColor, self.imgDepth, self.index, self.stamp, self.gps2D)
+            
+            
+            try:
+                (trans,rot) = self.listener.lookupTransform('/odom', '/base_footprint', rospy.Time(0)) # observer_frame, goal_frame
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                print("not receive tf...")
+
+            fnGroundSeg(self.imgColor, self.imgDepth, self.index, self.stamp, self.gps2D, trans,rot)
         else: 
             print("wait color")
 
+rospy.init_node("depthHandler", anonymous=True)
 synchronizer = Synchronize()
 count = 0
 index = 0
@@ -380,7 +376,7 @@ def cbGPS(msg):
 
 
 if __name__ == "__main__":
-    rospy.init_node("depthHandler", anonymous=True)
+    
     subDepth = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw", Image, cbDepth)
     subColor = rospy.Subscriber("/camera/color/image_raw", Image, cbColor)
     subGPS = rospy.Subscriber("/navsat/fix", NavSatFix, cbGPS)
