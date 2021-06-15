@@ -107,10 +107,10 @@ def fnWorldCoord(npDepth):
     fy_d = 617 #424
     layer = 80 # middle point cloud
     npPointX = np.asarray(range(640))-cx_d
-    # npPointX = np.diag(npPointX)
-    # npPointX = npDepth.dot(npPointX)/ fx_d * (-1)
-    npPointX_2D = npPointX*npDepth[layer] / fx_d 
-    npPointX_2D = npPointX_2D.astype('float16')
+    npPointX = np.diag(npPointX)
+    npPointX = npDepth.dot(npPointX)/ fx_d * (-1)
+    # npPointX_2D = npPointX*npDepth[layer] / fx_d 
+    # npPointX_2D = npPointX_2D.astype('float16')
 
     npPointY = np.asarray(range(320))-cy_d+160
     npPointY = np.diag(npPointY)
@@ -118,8 +118,10 @@ def fnWorldCoord(npDepth):
     npPointY = npPointY.dot(npDepth)/ fy_d * (-1) 
     npPointY = npPointY*np.cos(theta) + 360 # + npDepth * np.sin(theta)
     npPointY = npPointY.astype('float16')
-    npPointZ_2D = np.copy(npDepth[layer])
-    return npPointY, npPointX_2D, npPointZ_2D
+    npPointZ = npDepth
+    # npPointZ_2D = np.copy(npDepth[layer])
+    # return npPointY, npPointX_2D, npPointZ_2D
+    return npPointY, npPointX, npPointZ
 
 def fnMasking(npTreeMask):
     global height, width
@@ -149,33 +151,23 @@ def fnAvgDepth(npTreeMask,npDepth, x,y,w,h):
 def saveCV(npDepth_binary, npHeight_binary, moving_avg, npTreeMask_c, npColor, file_index):
     global file_path
     npBinarFuse = cv2.addWeighted(npDepth_binary, 0.7, moving_avg, (0.4), 0.0)
-    # npBinarFuse = cv2.cvtColor(npBinarFuse, cv2.COLOR_GRAY2BGR)
-        # canvas = np.zeros_like(npTreeMask_c)
-        
-        # p1 = np.hstack((npTreeMask_c,npBinarFuse))
-    # p1 = cv2.cvtColor(p1, cv2.COLOR_GRAY2BGR)
-    # p2 = np.hstack((npTreeMask_c, npDepthF_copy, canvas))
-    # p3 = np.vstack((p1,p2))
-    # cv2.imwrite(file_path + 'trunc_'+str(file_index/10) +'_'+str(int(index%10))+ '.jpg', npTreeMask_c)
-    # cv2.imwrite(file_path + 'binary_'+str(file_index/10) +'_'+str(int(index%10))+ '.jpg', npBinarFuse)
+    npBinarFuse = cv2.cvtColor(npBinarFuse, cv2.COLOR_GRAY2BGR)
+    canvas = np.zeros_like(npTreeMask_c)
 
     npTreeMask_cc = np.vstack((np.zeros((160,640, 3), dtype='uint8'),npTreeMask_c))
-    npTreeMask_cc = np.hstack((npTreeMask_cc, npColor))
-    # cv2.imwrite(file_path + 'result_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', npColor)
-    # cv2.imwrite(file_path + 'Cstack_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', npTreeMask_cc)
-
-    fuse = np.hstack((npDepth_binary, npHeight_binary, moving_avg, npBinarFuse))
-    # cv2.imwrite(file_path + 'Mstack_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', fuse)
-
+    cv2.imwrite(file_path + 'Mstack_'+str(file_index/10) +'_'+str(int(file_index%10))+ '.jpg', fuse)
+'''
 initial_GPS = False
 GPS_x = None
 GPS_y = None
+'''
 
+'''
 PointX_g = []
 PointY_g = []
 tx_g = np.array([])
 ty_g = np.array([])
-'''
+
 for i in range(24):#29
     for j in range(0,10,2):
         # file_path = "/home/anny/109-2/0420_treeExperiment/npy/2_gps_npy/np_"
@@ -194,17 +186,31 @@ def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D,trans,rot):
     global CentroidTracker #,H,W
     global initial_GPS, GPS_x, GPS_y, count_index, npPointXY_last, npPointXY_llast
 
-    
-    
     rects = []
     height,width = npDepth.shape
     npDepthROI = npDepth[160:]
+
+    '''filter out 3m'''
+    # start_time = time.time()
+    npDepthROI = npDepth[160:]
+    npDepth_binary = fnFilterDepth(npDepthROI)
+    # print("----------------filter depth: "+str(time.time()-start_time))
+
     '''world coordinate'''
+    # start_time = time.time()
     npPointY, npPointX_2D, npPointZ_2D = fnWorldCoord(npDepthROI)
+    # print("----------------world coord: "+str(time.time()-start_time))
+    
+    '''filter out 5mm'''
+    # start_time = time.time()
+    npHeight = np.copy(npPointY)
+    npHeight = npHeight.astype('float32')
+    moving_avg, npHeight_binary = fnFilterHeight(npHeight, file_index)
+    npTreeMask = cv2.bitwise_and(npDepth_binary, moving_avg)
 
     index = np.array(range(640))
     base = np.ones(640)
-    npPointXZ = np.vstack((npPointX_2D,npPointZ_2D,base)) 
+    npPointXZ = np.vstack((npPointX_2D,npPointZ_2D)) 
     npPointXZ = npPointXZ[:,npPointXZ[1,:]!=0]
     npPointXZ = npPointXZ.reshape(3,-1)
     npPointXZ = npPointXZ[:,npPointXZ[1,:]<4500]
@@ -326,19 +332,18 @@ class Synchronize:
             # print("reveive both color and depth")
             self.imgColor = msg2CV(self.msgColor)
             self.imgDepth = msg2CV(self.msgDepth)
-            # np.save(file_path + 'npyD_' + str(int(index/10))+'_'+str(int(index%10)), self.imgDepth)
-            # np.save(file_path + 'npyC_'+ str(int(index/10))+'_'+str(int(index%10)), self.imgColor)
-            #cv2.imwrite(file_path + 'c_'+str(int(index/10))+'_'+str(int(index%10)) + '.jpg', self.imgColor)
-            
+            np.save(file_path + 'npyD_' + str(int(index/10))+'_'+str(int(index%10)), self.imgDepth)
+            np.save(file_path + 'npyC_'+ str(int(index/10))+'_'+str(int(index%10)), self.imgColor)
+            # cv2.imwrite(file_path + 'c_'+str(int(index/10))+'_'+str(int(index%10)) + '.jpg', self.imgColor)
             
             try:
                 (trans,rot) = self.listener.lookupTransform('/odom', '/base_footprint', rospy.Time(0)) # observer_frame, goal_frame
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 print("not receive tf...")
 
-            fnGroundSeg(self.imgColor, self.imgDepth, self.index, self.stamp, self.gps2D, trans,rot)
+            # fnGroundSeg(self.imgColor, self.imgDepth, self.index, self.stamp, self.gps2D, trans,rot)
         else: 
-            print("wait color")
+            print("wait for color or depth")
 
 rospy.init_node("depthHandler", anonymous=True)
 synchronizer = Synchronize()
@@ -349,22 +354,15 @@ def cbDepth(msg):
     global index, file_path, synchronizer, count
     
     if index%2 == 0:
-            # print("receive depth!")
-            # np.save(file_path + str(int(index/10)), image)
         synchronizer.depthIn(msg, index)
         synchronizer.show()
-            # image = msg2CV(msg)
-            # cv2.imshow('raw image', image)
-            # cv2.waitKey(1)
-            # fnGroundSeg(image, str(int(index/10)))
-        print("count_callback: "+str(count))
+        # print("count_callback: "+str(count))
         count += 1
     index = index+1
     
 
 def cbColor(msg):
     global file_path, synchronizer
-    # print("receive color!")
     synchronizer.colorIn(msg)
     
 def cbGPS(msg):
