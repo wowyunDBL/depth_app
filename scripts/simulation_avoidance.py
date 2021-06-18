@@ -53,6 +53,7 @@ def msg2CV(msg):
     bridge = CvBridge()
     try:
         image = bridge.imgmsg_to_cv2(msg, desired_encoding='passthrough')
+        #image = np.resize(image, (480,640))
         return image
     except CvBridgeError as e:
         print(e)
@@ -78,7 +79,7 @@ def fnFilterDepth(npDepth):
     npDepth_binary = npDepth_binary.astype('uint8')
     return npDepth_binary
 
-def fnFilterHeight(npHeight, file_index):
+def fnFilterHeight(npHeight):
     global flag, count_init, param_model, file_path
     ret, npHeight_binary = cv2.threshold(npHeight, 150, 255, cv2.THRESH_BINARY) # below 100mm
     npHeight_binary = npHeight_binary.astype('uint8')
@@ -301,6 +302,15 @@ def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D,trans,rot):
         # cv2.waitKey(1)
     # cv2.destroyAllWindows()
 
+def build_map(npPointX, npPointZ, npTreeMask):
+    i = 80
+    a = npPointX[i][npTreeMask[i,:]==255]
+    b = npPointZ[i][npTreeMask[i,:]==255]
+    map = np.zeros((3000, 2000)) #* 0.5
+    for j in range(len(b)):
+        map[int(b[j])][int(a[j])+1000] = 1
+    plt.imsave(file_path+"map.png",map)
+
 def change_state(state):
     """
     Update machine state
@@ -309,12 +319,13 @@ def change_state(state):
     if state is not state_:
         #print 'Wall follower - [%s] - %s' % (state, state_dict_[state])
         state_ = state
-
+count_detection = 0
 def fnEasyAvoidance(npColor, npDepth):
-    global state_, avoidance_dist
+    global state_, avoidance_dist, count_detection
     rects = []
     height,width = npDepth.shape
-    print("H/W: ",height,width)
+    
+    np.save(file_path+"treeDepth_",npDepth)
     npDepthROI = npDepth[160:]
 
     '''filter out 3m'''
@@ -329,19 +340,35 @@ def fnEasyAvoidance(npColor, npDepth):
     npHeight = npHeight.astype('float32')
     moving_avg, npHeight_binary = fnFilterHeight(npHeight)
     npTreeMask = cv2.bitwise_and(npDepth_binary, moving_avg)
-
+    np.save(file_path+"treeMask_",npTreeMask)
     min_dist = np.min(npPointZ[npTreeMask==255])
-
-    if min_dist < avoidance_dist:
+    print("min_dist:", min_dist)
+    
+    '''
+    if state_ == 2:
+        if finish_flag == True:
+            state_=0
+    elif min_dist/1000 < avoidance_dist and state_== 0:
         state_ = 1
         print("detect obs!")
+    elif min_dist/1000 < avoidance_dist and state_== 1:
+        count_detection += 1
+        if count_detection > 3:
+            state_ = 2
     else:
         state_ = 0
 
     #npTreeMask_cc = np.vstack((np.zeros((160,640, 3), dtype='uint8'),npTreeMask))
-    cv2.imshow('avoidance', npTreeMask)
-    cv2.waitKey(1)
-    
+    #cv2.imshow('avoidance', npTreeMask)
+    #cv2.waitKey(1)
+    '''
+    if min_dist/1000 < avoidance_dist:
+        state_ = 1
+        print("detect obs! ")
+        count_detection += 1
+        if count_detection == 3:
+            print("save map-------------------")
+            build_map(npPointX, npPointZ, npTreeMask)
 
     
 
@@ -391,7 +418,7 @@ flag_start = False
 def cbDepth(msg):
     global index, file_path, synchronizer, count, flag_start
     flag_start = True
-    if index%2 == 0:
+    if index%10 == 0:
         synchronizer.depthIn(msg, index)
         synchronizer.show()
         # print("count_callback: "+str(count))
@@ -414,7 +441,7 @@ def random_wandering():
     
     msg = Twist()
     msg.linear.x = 0.2
-    print("random_wandering-----")
+    #print("random_wandering-----")
     return msg
 def obs_avoiding():
     """
@@ -448,13 +475,13 @@ def obs_detecting():
     #global wall_dist, max_speed, direction, p, d, angle, dist_min, dist_front, e, diff_e, angle_min
     msg = Twist()
     msg.linear.x = 0
-    print("obs_detecting-----")
+    #print("obs_detecting-----")
     return msg
-def obs_detecting():
+def stop():
     #global wall_dist, max_speed, direction, p, d, angle, dist_min, dist_front, e, diff_e, angle_min
     msg = Twist()
     msg.linear.x = 0
-    print("obs_detecting-----")
+    #print("stop-----")
     return msg
 
 if __name__ == "__main__":
