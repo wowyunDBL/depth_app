@@ -119,3 +119,12 @@ else:
 ### realsense in Gazebo
 https://github.com/IntelRealSense/realsense-ros/issues/1769
 there also a video
+https://github.com/issaiass/realsense2_description
+
+## 0618
+roslaunch realsense2_description view_d435_model_rviz_gazebo.launch
+sudo apt-get remove ros-noetic-turtlebot-*
+export TURTLEBOT3_MODEL=waffle_pi
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+roslaunch turtlebot3_gazebo turtlebot3_world.launch
+roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
