@@ -4,8 +4,13 @@ https://blog.miniasp.com/post/2018/05/28/Git-Credential-Howto
 
 ## current command
 ```
-roslaunch realsense2_camera rs_camera.launch  
+roslaunch realsense2_camera rs_camera_1.launch  
 rosbag record /camera/color/image_raw/compressed /camera/color/camera_info /camera/aligned_depth_to_color/image_raw /camera/aligned_depth_to_color/camera_info /tf_static /tf /imu/data /husky_velocity_controller/odom /outdoor_waypoint_nav/odometry/filtered /outdoor_waypoint_nav/odometry/filtered_map /gps/heading /gps/qual /gps/time_reference /gps/vel /husky_velocity_controller/cmd_vel /navsat/fix /outdoor_waypoint_nav/gps/filtered /outdoor_waypoint_nav/odometry/gps  
+
+rostopic pub /imu_filter/calib_comp/calib_request std_msgs/Uint8 “data: 1”
+rostopic echo /gps/qual
+rostopic echo /imu/data
+rostopic pub /imu_filter/calib_comp/calib_request std_msgs/UInt8 "data: 1"
 
 ### 18 topics
 roslaunch depth_app comp2raw.launch
@@ -101,5 +106,10 @@ DepthImageToLaserScan.h
 sudo apt-get install ros-noetic-gmapping ros-noetic-navigation 
 ```
 
+### gazebo realsense
+https://github.com/issaiass/realsense_gazebo_plugin
+
+### check if installed
+rospack list-names
 
 

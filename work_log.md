@@ -128,3 +128,15 @@ export TURTLEBOT3_MODEL=waffle_pi
 roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
 roslaunch turtlebot3_gazebo turtlebot3_world.launch
 roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
+
+launch-prefix="gnome-terminal -x
+```
+# solved (? if only need to publish /tf
+xacro: in-order processing became default in ROS Melodic. You can drop the option.
+[spawn_urdf-4] process has finished cleanly
+
+# you have to add following section in .launch file
+<include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+    <arg name="model" value="$(arg model)" />
+</include>
+```
