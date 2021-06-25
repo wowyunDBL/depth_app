@@ -140,3 +140,10 @@ xacro: in-order processing became default in ROS Melodic. You can drop the optio
     <arg name="model" value="$(arg model)" />
 </include>
 ```
+
+## 0625
+1. /tf 
+rospy.Time(0): constructs a /Time/ instance that has special significance in TF contexts: it will cause /lookupTransform(..)/ and friends to return the latest available data for a specific transform, instead of the data at a specific point in time.
+rospy.Time.now(): just returns the current 'wall clock time' (or the simulated clock, depending on whether you have a Clock server running).
+2. https://cxx0822.github.io/2020/05/05/gmapping-suan-fa-yuan-li-ji-yuan-dai-ma-jie-xi/
+3. https://pojenlai.wordpress.com/2015/07/16/ros-navigation-stack-%E7%B0%A1%E4%BB%8B/
