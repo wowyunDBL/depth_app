@@ -1,11 +1,8 @@
 <launch>
-
-  <!--arg name="map_file" default="/home/ncslaber/mapf_right_gmapping.yaml"/-->
-
   <!-- Run the depthimage_to_laserscan node -->
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
     <!--input depth img-->
-     <remap from="image" to="/camera/aligned_depth_to_color/image_raw"/>
+     <remap from="image" to="/camera/depth/image_raw"/>
     <!--out the lidar rostopic-->
     <remap from="scan" to="/scan" /> 
     <!--The number of pixel rows to use to generate the laserscan.-->
@@ -15,15 +12,15 @@
     <!--Minimum ranges to return in meters. Ranges less than this will be output as -Inf.-->
     <param name="range_min" value="0.45"/>
     <!--Maximum ranges to return in meters. Ranges greater than this will be output as +Inf.-->
-    <param name="range_max" value="6.50"/>
+    <param name="range_max" value="4.50"/>
 
-    <param name="output_frame_id" value="camera_aligned_depth_to_color_frame"/> <!--camera_depth_frame-->
+    <param name="output_frame_id" value="camera_depth_frame"/>
   </node>
   
-  <!--point cloud 3D-->
+  <!--point cloud 3D>
   <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager" />
 
-  <!--node pkg="nodelet" type="nodelet" name="nodelet1"
+  <node pkg="nodelet" type="nodelet" name="nodelet1"
         args="load depth_image_proc/point_cloud_xyz nodelet_manager">
     <remap from="camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
     <remap from="image_rect" to="/camera/aligned_depth_to_color/image_raw"/>
@@ -31,9 +28,7 @@
   </node-->
   <!--camera frame-->
   <!--node pkg="tf" type="static_transform_publisher" name="cam_link_broadcaster" args="0 0 0.36 0 0 0 base_footprint camera_link 100" /-->
-  
-  <!--node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/-->
-  <node pkg="rviz" type="rviz" name="rviz" required="true"
+	
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find depth_app)/rviz/check_pointCloud.rviz"/>
-
 </launch>

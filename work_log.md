@@ -147,3 +147,13 @@ rospy.Time(0): constructs a /Time/ instance that has special significance in TF 
 rospy.Time.now(): just returns the current 'wall clock time' (or the simulated clock, depending on whether you have a Clock server running).
 2. https://cxx0822.github.io/2020/05/05/gmapping-suan-fa-yuan-li-ji-yuan-dai-ma-jie-xi/
 3. https://pojenlai.wordpress.com/2015/07/16/ros-navigation-stack-%E7%B0%A1%E4%BB%8B/
+
+
+## 0628
+### hector_mapping
+```
+roslaunch turtlebot3_gazebo turtlebot3_world.launch
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+roslaunch depth_app depth2pc_4_simulation.launch
+roslaunch depth_app hector_mower.launch
+```
