@@ -60,3 +60,17 @@ negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196
 ```
+
+### work log
+1. Install PlotJuggler
+2. Progress report -> crazy comparing different rosbag
+
+2021-06-29-11-06-51.bag, 2021-06-29-11-13-32.bag: front_2 ok
+2021-06-29-11-23-08: route-right_1 ok
+2021-06-29-11-44-00.bag 2021-06-29-11-54-18: left_2
+2021-06-29-11-47-30: navigation test 
+navigation_test_round.bag => fail ....
+
+### Reference
+1. PlotJuggler: learn the basics
+https://slides.com/davidefaconti/introduction-to-plotjuggler
