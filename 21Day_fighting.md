@@ -74,3 +74,33 @@ navigation_test_round.bag => fail ....
 ### Reference
 1. PlotJuggler: learn the basics
 https://slides.com/davidefaconti/introduction-to-plotjuggler
+
+## 0701
+### ORB-SLAM
+```
+git clone https://github.com/stevenlovegrove/Pangolin.git
+cd Pangolin/
+mkdir build
+cd build/
+cmake ..
+make
+
+<when cmake fail>
+sudo apt install libglew-dev
+
+```
+
+```
+git clone https://github.com/raulmur/ORB_SLAM2.git ORB_SLAM2
+<all make -j to only make>
+cd ORB_SLAM2
+./build.sh
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:PATH/ORB_SLAM2/Examples/ROS # your own PATH
+./build_ros.sh
+
+```
+
+```
+roslaunch orb_slam2_ros orb_slam2_d435_rgbd.launch
+```
+https://www.ncnynl.com/archives/201807/2501.html
