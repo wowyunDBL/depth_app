@@ -104,3 +104,27 @@ export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:PATH/ORB_SLAM2/Examples/ROS # your o
 roslaunch orb_slam2_ros orb_slam2_d435_rgbd.launch
 ```
 https://www.ncnynl.com/archives/201807/2501.html
+
+<.bashrc>
+< laptop_ip=192.168.0.102>
+< raspberry pi ip=192.168.0.104>
+< jetson nano ip= 192.168.0.100>
+export ROS_MASTER_URI=http://192.168.0.104:11311
+export ROS_HOSTNAME=192.168.0.102
+<etc/hosts>
+192.168.0.104 pi3test
+192.168.0.100 ursrobot
+
+
+### Turtlebot test for free space
+roslaunch turtlebot3_gazebo turtlebot3_world.launch
+roslaunch turtlebot3_slam turtlebot3_gmapping.launch
+roslaunch depth_app depth2pc_4_laser.launch
+
+### gmapping mark free space
+1. depthimage_to_laserscan: value shouldn't be nan
+change Depth.cfg
+2. use rosnode laser_filters to set specific value
+
+### work log
+two video to compare differnet tf
