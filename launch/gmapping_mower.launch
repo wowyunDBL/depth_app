@@ -3,12 +3,39 @@
   <arg name="set_odom_frame" default="map"/>                  <!--odom-->
   <arg name="set_map_frame"  default="map_yun"/>
 
+  <!-- Run the depthimage_to_laserscan node -->
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
+    <!--input depth img-->
+    <remap from="image" to="/camera/aligned_depth_to_color/image_raw"/>
+    <!--out the lidar rostopic-->
+    <remap from="scan" to="/scan" /> 
+    <!--The number of pixel rows to use to generate the laserscan.-->
+    <param name="scan_height" value="40"/>
+    <!--Time between scans (seconds). Typically, 1.0/frame_rate. -->
+　　<param name="scan_time" value="0.03"/>
+    <!--Minimum ranges to return in meters. Ranges less than this will be output as -Inf.-->
+    <param name="range_min" value="0.4"/>
+    <!--Maximum ranges to return in meters. Ranges greater than this will be output as +Inf.-->
+    <param name="range_max" value="60"/>
+
+    <param name="output_frame_id" value="camera_aligned_depth_to_color_frame"/> <!--camera_depth_frame-->
+  </node>
+  
+  <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find depth_app)/rviz/check_pointCloud.rviz"/>
+
+  <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
+    <rosparam command="load" file="$(find depth_app)/config/lidar_config.yaml"/>
+    <remap from="base_scan" to="scan"/>
+  </node>
+
   <!-- Gmapping -->
   <node pkg="gmapping" type="slam_gmapping" name="yun_2D_gmapping" output="screen">
     <param name="base_frame" value="$(arg set_base_frame)"/>
     <param name="odom_frame" value="$(arg set_odom_frame)"/>
     <param name="map_frame"  value="$(arg set_map_frame)"/>
     <rosparam command="load" file="$(find depth_app)/config/gmapping_params.yaml" />
+    <remap from="scan" to="/scan_filtered" />
   </node>
   
 </launch>

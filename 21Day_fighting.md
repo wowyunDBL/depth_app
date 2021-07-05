@@ -26,6 +26,7 @@ roslaunch depth_app depth2pc.launch
 roslaunch depth_app gmapping_mower.launch
 roslaunch depth_app hector_mower.launch
 rosrun map_server map_saver -f ~/odomf_right_hector
+rosrun map_server map_server mymap.yaml
 ```
 ```
 mySubscriber_2_CSV.py
@@ -120,6 +121,7 @@ export ROS_HOSTNAME=192.168.0.102
 roslaunch turtlebot3_gazebo turtlebot3_world.launch
 roslaunch turtlebot3_slam turtlebot3_gmapping.launch
 roslaunch depth_app depth2pc_4_laser.launch
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
 
 ### gmapping mark free space
 1. depthimage_to_laserscan: value shouldn't be nan
@@ -128,3 +130,56 @@ change Depth.cfg
 
 ### work log
 two video to compare differnet tf
+
+## 0702
+```
+rosbag record /tf_static /tf /imu/data /husky_velocity_controller/odom /outdoor_waypoint_nav/odometry/filtered /outdoor_waypoint_nav/odometry/filtered_map /gps/heading /gps/qual /gps/time_reference /gps/vel /husky_velocity_controller/cmd_vel /navsat/fix /outdoor_waypoint_nav/gps/filtered /outdoor_waypoint_nav/odometry/gps /imu_filter/rpy/filtered
+```
+
+```
+rostopic pub /imu_filter/calib_comp/calib_request std_msgs/UInt8 "data: 1"
+```
+
+```
+rosbag record /camera/color/image_raw/compressed /camera/color/camera_info /camera/aligned_depth_to_color/image_raw /camera/aligned_depth_to_color/camera_info /tf_static /tf /imu/data /husky_velocity_controller/odom /outdoor_waypoint_nav/odometry/filtered /outdoor_waypoint_nav/odometry/filtered_map /gps/heading /gps/qual /gps/time_reference /gps/vel /husky_velocity_controller/cmd_vel /navsat/fix /outdoor_waypoint_nav/gps/filtered /outdoor_waypoint_nav/odometry/gps /camera/rgb_camera/auto_exposure_roi/parameter_descriptions /camera/rgb_camera/auto_exposure_roi/parameter_updates /camera/extrinsics/depth_to_color /camera/realsense2_camera_manager/bond /camera/stereo_module/auto_exposure_roi/parameter_descriptions /camera/stereo_module/auto_exposure_roi/parameter_updates /camera/stereo_module/parameter_descriptions /camera/stereo_module/parameter_updates /camera/rgb_camera/parameter_descriptions /camera/rgb_camera/parameter_updates /imu_filter/rpy/filtered
+```
+## 0705
+```
+# 執行 dpkg 指令以確保每個套件都有成功安裝
+$ dpkg --get-selections | grep gmapping
+ros-kinetic-gmapping				install
+ros-kinetic-openslam-gmapping			install
+ros-kinetic-slam-gmapping			install
+```
+```
+$ dpkg --get-selections | grep turtlebot3
+ros-kinetic-turtlebot3				install
+ros-kinetic-turtlebot3-bringup			install
+ros-kinetic-turtlebot3-description		install
+ros-kinetic-turtlebot3-fake			install
+ros-kinetic-turtlebot3-gazebo			install
+ros-kinetic-turtlebot3-msgs			install
+ros-kinetic-turtlebot3-navigation		install
+ros-kinetic-turtlebot3-simulations		install
+ros-kinetic-turtlebot3-slam			install
+ros-kinetic-turtlebot3-teleop			install
+```
+
+### work log
+1. draw map with 4.5m/6m free space
+2. AMCL
+3. gazebo setting
+4. understand why goes like this (check paper note)
+5. watch ros log
+
+### new launch file for different case
+```
+```
+
+
+### ref
+1. realsense-ros gazebo plugin
+https://github.com/pal-robotics/realsense_gazebo_plugin/issues/7
+
+## 0706
+1. use <!-- move_base --> to set initla pose
