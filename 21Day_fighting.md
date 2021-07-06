@@ -183,3 +183,18 @@ https://github.com/pal-robotics/realsense_gazebo_plugin/issues/7
 
 ## 0706
 1. use <!-- move_base --> to set initla pose
+
+### install RTAB map
+```
+# first install
+sudo apt-get install ros-kinetic-rtabmap-ros
+# 
+```
+
+```
+roslaunch rtabmap_ros rtabmap.launch \
+    rtabmap_args:="--delete_db_on_start" (approx_sync:=false)
+
+# for localization mode
+roslaunch rtabmap_ros rtabmap.launch
+```
