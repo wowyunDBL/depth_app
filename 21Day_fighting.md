@@ -163,6 +163,8 @@ ros-kinetic-turtlebot3-navigation		install
 ros-kinetic-turtlebot3-simulations		install
 ros-kinetic-turtlebot3-slam			install
 ros-kinetic-turtlebot3-teleop			install
+
+$ apt-cache search ros-kinetic-cartographer
 ```
 
 ### work log
@@ -197,4 +199,25 @@ roslaunch rtabmap_ros rtabmap.launch \
 
 # for localization mode
 roslaunch rtabmap_ros rtabmap.launch
+```
+
+## 0708
+1. gazebo framework and implement return /scan in nano
+2. understand parameters of
+```
+<gmapping>
+param name="particles" value="1" .... particles in the filer (default:30, which slows
+down the updating procedure)
+param name="map_update_interval" value="0.1" .... updates in sec
+```
+
+```
+<amcl> (ref: https://www.twblogs.net/a/5d5ecfcbbd9eee5327fdca4e)
+odom_alpha1: 机器人旋转分量中的旋转噪音
+```
+3. gmapping /entrophy: reflecting the degree of dispersion of robot pose estimation.
+4. cartographer
+```
+sudo apt-get install ros-kinetic-cartographer ros-kinetic-cartographer-ros ros-kinetic-cartographer-ros-msgs ros-kinetic-cartographer-rviz
+sudo apt-get remove ros-kinetic-cartographer ros-kinetic-cartographer-ros ros-kinetic-cartographer-ros-msgs ros-kinetic-cartographer-rviz
 ```

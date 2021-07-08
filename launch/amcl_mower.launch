@@ -1,24 +1,18 @@
 <launch>
   <!-- Arguments -->
-  <arg name="map_file" default="$(find depth_app)/maps/gmapping_45m.yaml"/>
+  <arg name="map_file" default="$(find depth_app)/maps/gmapping_6m.yaml"/>
   <arg name="open_rviz" default="true"/>
   <arg name="set_map_frame" default="map_yun"/>
 
+  <!-- Run the depthimage_to_laserscan node >
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
-    <!--input depth img-->
-     <remap from="image" to="/camera/aligned_depth_to_color/image_raw"/>
-    <!--out the lidar rostopic-->
+    <remap from="image" to="/camera/aligned_depth_to_color/image_raw"/>
     <remap from="scan" to="/scan" /> 
-    <!--The number of pixel rows to use to generate the laserscan.-->
     <param name="scan_height" value="40"/>
-    <!--Time between scans (seconds). Typically, 1.0/frame_rate. -->
-　　<param name="scan_time" value="0.03"/>
-    <!--Minimum ranges to return in meters. Ranges less than this will be output as -Inf.-->
+    <param name="scan_time" value="0.03"/>
     <param name="range_min" value="0.4"/>
-    <!--Maximum ranges to return in meters. Ranges greater than this will be output as +Inf.-->
     <param name="range_max" value="6"/>
-
-    <param name="output_frame_id" value="camera_aligned_depth_to_color_frame"/> <!--camera_depth_frame-->
+    <param name="output_frame_id" value="camera_aligned_depth_to_color_frame"/-->
   </node>
 
   <!-- Map server -->

@@ -1,38 +1,32 @@
 <launch>
-  <!-- Arguments >
-  <arg name="map_file" default="$(find depth_app)/maps/simulation_gmapping.yaml"/>
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find depth_app)/maps/simulation_gmapping_m.yaml"/>
   <arg name="open_rviz" default="true"/>
-  <arg name="set_map_frame" default="map"/-->
-
+  <arg name="set_map_frame" default="map"/>
+  
+  <!-- Run the depthimage_to_laserscan node -->
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
-    <!--input depth img-->
-     <remap from="image" to="/camera/depth/image_raw"/>
-    <!--out the lidar rostopic-->
+    <remap from="image" to="/camera/depth/image_raw"/>
     <remap from="scan" to="/scan" /> 
-    <!--The number of pixel rows to use to generate the laserscan.-->
     <param name="scan_height" value="40"/>
-    <!--Time between scans (seconds). Typically, 1.0/frame_rate. -->
-　　<param name="scan_time" value="0.03"/>
-    <!--Minimum ranges to return in meters. Ranges less than this will be output as -Inf.-->
+    <param name="scan_time" value="0.03"/>
     <param name="range_min" value="0.4"/>
-    <!--Maximum ranges to return in meters. Ranges greater than this will be output as +Inf.-->
     <param name="range_max" value="6"/>
-
-    <param name="output_frame_id" value="camera_link"/> <!--camera_depth_frame-->
+    <param name="output_frame_id" value="camera_link"/>
   </node>
 
-  <!-- Map server >
+  <!-- Map server -->
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)">
     <param name="frame_id"  value="$(arg set_map_frame)"/>
-  </node-->
+  </node>
 
-  <!-- AMCL >
-  <include file="$(find depth_app)/launch/amcl_config_mower_simulation.launch"/-->
+  <!-- AMCL -->
+  <include file="$(find depth_app)/launch/amcl_config_mower_simulation.launch"/>
 
-  <!-- rviz >
+  <!-- rviz -->
   <group if="$(arg open_rviz)"> 
     <node pkg="rviz" type="rviz" name="rviz" required="true"
-          args="-d $(find depth_app)/rviz/amcl.rviz"/>
-  </group-->
+          args="-d $(find depth_app)/rviz/amcl_simulation.rviz"/>
+  </group>
 
 </launch>

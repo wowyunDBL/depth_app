@@ -1,0 +1,16 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find depth_app)/maps/gmapping_6m.yaml"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="set_map_frame" default="map_yun"/>
+
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)">
+    <param name="frame_id"  value="$(arg set_map_frame)"/>
+  </node>
+
+  
+  
+
+</launch>
