@@ -203,6 +203,10 @@ roslaunch rtabmap_ros rtabmap.launch
 
 ## 0708
 1. gazebo framework and implement return /scan in nano
+```
+<bug>
+sudo apt install libopencv3.2
+```
 2. understand parameters of
 ```
 <gmapping>
@@ -221,3 +225,26 @@ odom_alpha1: 机器人旋转分量中的旋转噪音
 sudo apt-get install ros-kinetic-cartographer ros-kinetic-cartographer-ros ros-kinetic-cartographer-ros-msgs ros-kinetic-cartographer-rviz
 sudo apt-get remove ros-kinetic-cartographer ros-kinetic-cartographer-ros ros-kinetic-cartographer-ros-msgs ros-kinetic-cartographer-rviz
 ```
+
+## 0709
+1. compare usb 3.2 and 2.1: 2Hz/3Hz
+2. return /scan and run gmapping
+3. install teleop_twist_keyboard and cartographer
+```
+rosservice type /outdoor_waypoint_nav/datum => robot_localization/SetDatum
+rosservice call /outdoor_waypoint_nav/datum 
+"geo_pose: 
+ position: 
+   latitude: 25.0183 
+   longitude: 121.545 
+   altitude: 0.0 
+ orientation:
+   x: 0.0
+   y: 0.0
+   z: 0.0
+   w: 1.0"
+```
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+
+roslaunch realsense2_camera rs_aligned_depth.launch
+roslaunch realsense2_camera depth2pc.launch
