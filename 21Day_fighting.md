@@ -248,3 +248,49 @@ rosrun teleop_twist_keyboard teleop_twist_keyboard.py
 
 roslaunch realsense2_camera rs_aligned_depth.launch
 roslaunch realsense2_camera depth2pc.launch
+
+## 0710 
+I have install for 2 days and finally successed!
+Note: dependency-> lua, prohub ,,, (and restart might be a good choice)
+ref: https://zhuanlan.zhihu.com/p/345761455
+```
+# run test
+roslaunch cartographer_ros demo_backpack_2d.launch bag_filename:=${HOME}/Downloads/cartographer_paper_deutsches_museum.bag
+```
+
+```
+# gmapping log
+
+Scan Matching Failed, using odometry. Likelihood=-227.64
+lp:3.04572 -3.50232 -0.682254
+op:3.22058 -3.66675 -0.673163
+Average Scan Matching Score=46.4972
+neff= 13.9819
+*************RESAMPLE***************
+Deleting Nodes: 0 4 6 8 9 11 12 14 17 20 21 25 27 28 Done
+Deleting old particles...Done
+Copying Particles and  Registering  scans... Done
+update frame 146
+update ld=0.208254 ad=0.0928452
+Laser Pose= 3.36824 -3.81098 -0.592377
+m_count 37
+Scan Matching Failed, using odometry. Likelihood=2.52962e-320
+lp:3.22058 -3.66675 -0.673163
+op:3.36824 -3.81098 -0.592377
+Average Scan Matching Score=48.6681
+neff= 24.4349
+Registering Scans:Done
+update frame 150
+update ld=0.236013 ad=0.0679503
+Laser Pose= 3.55729 -3.93223 -0.618068
+m_count 38
+Average Scan Matching Score=58.4531
+
+
+```
+
+```
+roslaunch depth_app map_traj.launch
+rostopic pub syscommand std_msgs/String "savegeotiff"
+```
+
