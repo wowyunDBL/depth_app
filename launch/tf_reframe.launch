@@ -1,0 +1,15 @@
+<launch>
+  <arg name="bag_filename"  default="/home/ncslaber/109-2/0712_library_manyCircleTest/1/2021-07-12-18-44-40.bag"/>
+
+  <node name="playbag" pkg="rosbag" type="play" args="--clock $(arg bag_filename) -r 0.5" output="screen">
+    <remap from="tf" to="tf_in" />
+  </node>
+
+  <node name="tf_remove_frames" pkg="depth_app" type="tf_remove_frames.py">
+    <remap from="tf_out" to="/tf" />
+    <rosparam param="remove_frames">
+      - map_yun
+    </rosparam>
+  </node>
+
+</launch>

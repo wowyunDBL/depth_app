@@ -3,7 +3,7 @@
   <arg name="set_odom_frame" default="map"/>                  <!--odom-->
   <arg name="set_map_frame"  default="map_yun"/>
 
-  <!-- Run the depthimage_to_laserscan node >
+  <!-- Run the depthimage_to_laserscan node -->
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
     <remap from="image" to="/camera/aligned_depth_to_color/image_raw"/>
     <remap from="scan" to="/scan" /> 
@@ -12,16 +12,17 @@
     <param name="range_min" value="0.4"/>
     <param name="range_max" value="60"/>
     <param name="output_frame_id" value="camera_aligned_depth_to_color_frame"/>
-  </node-->
+  </node>
   
   <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find depth_app)/rviz/check_pointCloud.rviz"/>
   
-  <!-- Run the laser_filters node >
+  <!-- Run the laser_filters node -->
   <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
     <rosparam command="load" file="$(find depth_app)/config/lidar_config.yaml"/>
     <remap from="base_scan" to="scan"/>
-  </node-->
+  </node>
+
 
   <!-- Gmapping -->
   <node pkg="gmapping" type="slam_gmapping" name="yun_2D_gmapping" output="screen">

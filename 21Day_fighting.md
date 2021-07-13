@@ -119,6 +119,7 @@ export ROS_HOSTNAME=192.168.0.102
 
 ### Turtlebot test for free space
 roslaunch turtlebot3_gazebo turtlebot3_world.launch
+roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
 roslaunch turtlebot3_slam turtlebot3_gmapping.launch
 roslaunch depth_app depth2pc_4_laser.launch
 roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
@@ -141,8 +142,18 @@ rostopic pub /imu_filter/calib_comp/calib_request std_msgs/UInt8 "data: 1"
 ```
 
 ```
+1. 
 rosbag record /camera/color/image_raw/compressed /camera/color/camera_info /camera/aligned_depth_to_color/image_raw /camera/aligned_depth_to_color/camera_info /tf_static /tf /imu/data /husky_velocity_controller/odom /outdoor_waypoint_nav/odometry/filtered /outdoor_waypoint_nav/odometry/filtered_map /gps/heading /gps/qual /gps/time_reference /gps/vel /husky_velocity_controller/cmd_vel /navsat/fix /outdoor_waypoint_nav/gps/filtered /outdoor_waypoint_nav/odometry/gps /camera/rgb_camera/auto_exposure_roi/parameter_descriptions /camera/rgb_camera/auto_exposure_roi/parameter_updates /camera/extrinsics/depth_to_color /camera/realsense2_camera_manager/bond /camera/stereo_module/auto_exposure_roi/parameter_descriptions /camera/stereo_module/auto_exposure_roi/parameter_updates /camera/stereo_module/parameter_descriptions /camera/stereo_module/parameter_updates /camera/rgb_camera/parameter_descriptions /camera/rgb_camera/parameter_updates /imu_filter/rpy/filtered
+
+2. 
+rosbag record /camera/color/camera_info /camera/color/image_raw/compressed /camera/depth/camera_info /camera/depth/image_rect_raw /camera/extrinsics/depth_to_color /camera/realsense2_camera_manager/bond /camera/rgb_camera/auto_exposure_roi/parameter_descriptions /camera/rgb_camera/auto_exposure_roi/parameter_updates /camera/rgb_camera/parameter_descriptions /camera/rgb_camera/parameter_updates /camera/stereo_module/auto_exposure_roi/parameter_descriptions /camera/stereo_module/auto_exposure_roi/parameter_updates /camera/stereo_module/parameter_descriptions /camera/stereo_module/parameter_updates /tf_static /tf /imu/data /husky_velocity_controller/odom /outdoor_waypoint_nav/odometry/filtered /outdoor_waypoint_nav/odometry/filtered_map /gps/heading /gps/qual /gps/time_reference /gps/vel /husky_velocity_controller/cmd_vel /navsat/fix /outdoor_waypoint_nav/gps/filtered /outdoor_waypoint_nav/odometry/gps /imu_filter/rpy/filtered
 ```
+
+```
+# gazebo
+rosbag record /tf_static /tf /cmd_vel /scan
+```
+
 ## 0705
 ```
 # 執行 dpkg 指令以確保每個套件都有成功安裝
@@ -244,7 +255,7 @@ rosservice call /outdoor_waypoint_nav/datum
    z: 0.0
    w: 1.0"
 ```
-rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=husky_velocity_controller/cmd_vel _repeat_rate:=10.0
 
 roslaunch realsense2_camera rs_aligned_depth.launch
 roslaunch realsense2_camera depth2pc.launch
@@ -294,3 +305,34 @@ roslaunch depth_app map_traj.launch
 rostopic pub syscommand std_msgs/String "savegeotiff"
 ```
 
+## 0712
+1. simulation in Gazebo (transform_publish_period: 0.)
+2. run in MD601 (6.5m/10m)
+3. run in outdoor library
+4. remove frames
+5. hector_trajectory_server
+
+```
+# in my computer
+<check /etc/hosts>
+roslaunch depth_app gmapping_mower.launch
+roslaunch depth_app map_traj.launch
+rostopic pub syscommand std_msgs/String "savegeotiff"
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+```
+
+```
+# in nano
+<check /etc/hosts>
+rosservice call /outdoor_waypoint_nav/datum "geo_pose: position: latitude: 25.0172  longitude: 121.542 altitude: 0.0 orientation: x: 0.0 y: 0.0 z: 0.0 w: 1.0"
+rostopic pub /imu_filter/calib_comp/calib_request std_msgs/UInt8 "data: 1"
+roslaunch realsense2_camera rs_align.launch
+roslaunch realsense2_camera depth2pc.launch
+```
+
+## 0713
+1. roslaunch depth_app tf_reframe.launch => remove map_yun
+2. change gmapping field of view
+3. finally understand hector_traj: 
+4. depth_image replace of align_depth: is it ok to reproduce?
+5. what is nodelet: 

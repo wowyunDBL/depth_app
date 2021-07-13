@@ -8,7 +8,7 @@ import sys
 if sys.platform.startswith('linux'): # or win
     print("in linux")
     # file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/p_1_45_center_try/"
-    file_path = "/home/anny/109-2/0618_mapExperiment/oneTree_MD/"
+    file_path = "/home/ncslaber/109-2/tf_check/"
     # print(sys.path)
 # import message_filters
 
@@ -36,7 +36,7 @@ from pyproj import Proj
 
 '''trunk center tracker'''
 from collections import deque
-from pyimagesearch.centroidtracker_mine import CentroidTracker
+# from pyimagesearch.centroidtracker_mine import CentroidTracker
 pts = deque(maxlen=5)
 
 
@@ -53,7 +53,7 @@ flag = False
 param_model = np.zeros((320,640))
 count_init = 1
 
-centroidTracker = CentroidTracker()  
+# centroidTracker = CentroidTracker()  
 (height, width) = (None, None)
 
 def fnFilterDepth(npDepth):
@@ -107,10 +107,10 @@ def fnWorldCoord(npDepth):
     fy_d = 617 #424
     layer = 80 # middle point cloud
     npPointX = np.asarray(range(640))-cx_d
-    npPointX = np.diag(npPointX)
-    npPointX = npDepth.dot(npPointX)/ fx_d * (-1)
-    # npPointX_2D = npPointX*npDepth[layer] / fx_d 
-    # npPointX_2D = npPointX_2D.astype('float16')
+    # npPointX = np.diag(npPointX)
+    # npPointX = npDepth.dot(npPointX)/ fx_d * (-1)
+    npPointX_2D = npPointX*npDepth[layer] / fx_d 
+    npPointX_2D = npPointX_2D.astype('float16')
 
     npPointY = np.asarray(range(320))-cy_d+160
     npPointY = np.diag(npPointY)
@@ -118,10 +118,10 @@ def fnWorldCoord(npDepth):
     npPointY = npPointY.dot(npDepth)/ fy_d * (-1) 
     npPointY = npPointY*np.cos(theta) + 360 # + npDepth * np.sin(theta)
     npPointY = npPointY.astype('float16')
-    npPointZ = npDepth
-    # npPointZ_2D = np.copy(npDepth[layer])
-    # return npPointY, npPointX_2D, npPointZ_2D
-    return npPointY, npPointX, npPointZ
+    # npPointZ = npDepth
+    npPointZ_2D = np.copy(npDepth[layer])
+    return npPointY, npPointX_2D, npPointZ_2D
+    # return npPointY, npPointX, npPointZ
 
 def fnMasking(npTreeMask):
     global height, width
@@ -183,7 +183,7 @@ npPointXY_last = None
 npPointXY_llast = None
 def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D,trans,rot):
     global flag, param_model, count_init, height,width, file_path
-    global CentroidTracker #,H,W
+    # global CentroidTracker #,H,W
     global initial_GPS, GPS_x, GPS_y, count_index, npPointXY_last, npPointXY_llast
 
     rects = []
@@ -209,13 +209,21 @@ def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D,trans,rot):
     npTreeMask = cv2.bitwise_and(npDepth_binary, moving_avg)
 
     index = np.array(range(640))
-    base = np.ones(640)
+    
+    # npPointXZ = np.vstack((npPointX_2D,npPointZ_2D)) 
+    # npPointXZ = npPointXZ[:,npPointXZ[1,:]!=0]
+    # npPointXZ = npPointXZ.reshape(3,-1)
+    # npPointXZ = npPointXZ[:,npPointXZ[1,:]<4500]
+    # npPointXZ = npPointXZ.reshape(3,-1)
+    # npPointXY = np.vstack((npPointXZ[1]/1000, -npPointXZ[0]/1000, npPointXZ[2]))# notice I transform coordinate
+
     npPointXZ = np.vstack((npPointX_2D,npPointZ_2D)) 
     npPointXZ = npPointXZ[:,npPointXZ[1,:]!=0]
-    npPointXZ = npPointXZ.reshape(3,-1)
+    npPointXZ = npPointXZ.reshape(2,-1)
     npPointXZ = npPointXZ[:,npPointXZ[1,:]<4500]
-    npPointXZ = npPointXZ.reshape(3,-1)
-    npPointXY = np.vstack((npPointXZ[1]/1000, -npPointXZ[0]/1000, npPointXZ[2]))# notice I transform coordinate
+    npPointXZ = npPointXZ.reshape(2,-1)
+    base = np.ones(npPointXZ.shape[1])
+    npPointXY = np.vstack((npPointXZ[1]/1000, -npPointXZ[0]/1000, base))# notice I transform coordinate
 
     
     rot_m = transforms3d.quaternions.quat2mat([rot[0], rot[1], rot[2], rot[3]])
@@ -233,62 +241,62 @@ def fnGroundSeg(npColor, npDepth, file_index, stamp, gps2D,trans,rot):
     # npPointXY = np.dot(rot_m, npPointXY)
     npPointXY = np.dot(rotationM, npPointXY)
     
-    if initial_GPS is False:
-        GPS_x = gps2D[0]
-        GPS_Y = gps2D[1]
-        initial_GPS = True
+    # if initial_GPS is False:
+    #     GPS_x = gps2D[0]
+    #     GPS_Y = gps2D[1]
+    #     initial_GPS = True
     
-    np.save(file_path+"np_"+str(file_index/10) +'_'+str(int(file_index%10)), (npPointXY[0], npPointXY[1], tx, ty))
+    np.save(file_path+"pl_t_"+str(file_index/10) +'_'+str(int(file_index%10)), (npPointXY[0], npPointXY[1], tx, ty))
     
-    textStamp = stamp.secs + stamp.nsecs * 1e-9
-    fig, ax = plt.subplots(figsize=(6, 9), dpi=100)
-    # ax.axis('equal')
-    plt.grid(True)
-    base = plt.gca().transData
-    rotation = transforms.Affine2D().rotate_deg(92)#92, 135
-    # textGPS = "["+str(math.trunc(gps2D[0]*1000%1e6))+", "+str(math.trunc(gps2D[1]*1000%1e6))+"]"
-    # plt.text(gps2D[0]+0.1-GPS_x, gps2D[1]+0.1-GPS_y, textGPS, transform=rotation + base,fontsize=22)
-    # ax.text(gps2D[0]-0.1, gps2D[1]+0.1, str(math.trunc(i/5/60))+":"+str(math.trunc(i/5%60)), fontsize=14, transform = rot + base)
-    colors = cm.rainbow(np.linspace(1, 0, np.asarray(tx_g).shape[0]))
-    plt.scatter(tx_g, ty_g, c=colors, transform = rotation + base)
+    # textStamp = stamp.secs + stamp.nsecs * 1e-9
+    # fig, ax = plt.subplots(figsize=(6, 9), dpi=100)
+    # # ax.axis('equal')
+    # plt.grid(True)
+    # base = plt.gca().transData
+    # rotation = transforms.Affine2D().rotate_deg(92)#92, 135
+    # # textGPS = "["+str(math.trunc(gps2D[0]*1000%1e6))+", "+str(math.trunc(gps2D[1]*1000%1e6))+"]"
+    # # plt.text(gps2D[0]+0.1-GPS_x, gps2D[1]+0.1-GPS_y, textGPS, transform=rotation + base,fontsize=22)
+    # # ax.text(gps2D[0]-0.1, gps2D[1]+0.1, str(math.trunc(i/5/60))+":"+str(math.trunc(i/5%60)), fontsize=14, transform = rot + base)
+    # colors = cm.rainbow(np.linspace(1, 0, np.asarray(tx_g).shape[0]))
+    # plt.scatter(tx_g, ty_g, c=colors, transform = rotation + base)
     
-    # textBase_footprint = "["+str(math.trunc(tx*1000))+", "+str(math.trunc(ty*1000))+"]"
-    # plt.text(tx+0.1, ty+0.1, textBase_footprint, transform=rotation + base,fontsize=22)
-    ax.plot(tx, ty,linestyle='None',markersize=30, marker='*', color='r', transform=rotation + base, markeredgecolor='k',markeredgewidth=2)
-    count_index += 1
-    if count_index>2:
-        ax.plot(npPointXY_llast[0], npPointXY_llast[1], linestyle='None',markersize=3, marker='o',color='silver', transform=rotation + base)
-        ax.plot(npPointXY_last[0], npPointXY_last[1], linestyle='None',markersize=3, marker='o',color='black', transform=rotation + base)
+    # # textBase_footprint = "["+str(math.trunc(tx*1000))+", "+str(math.trunc(ty*1000))+"]"
+    # # plt.text(tx+0.1, ty+0.1, textBase_footprint, transform=rotation + base,fontsize=22)
+    # ax.plot(tx, ty,linestyle='None',markersize=30, marker='*', color='r', transform=rotation + base, markeredgecolor='k',markeredgewidth=2)
+    # count_index += 1
+    # if count_index>2:
+    #     ax.plot(npPointXY_llast[0], npPointXY_llast[1], linestyle='None',markersize=3, marker='o',color='silver', transform=rotation + base)
+    #     ax.plot(npPointXY_last[0], npPointXY_last[1], linestyle='None',markersize=3, marker='o',color='black', transform=rotation + base)
         
-        tmp = npPointXY_last
-        npPointXY_last = npPointXY
-        npPointXY_llast = tmp
-    elif count_index==2:
-        npPointXY_last = npPointXY
-    else:
-        npPointXY_llast = npPointXY
-    ax.plot(npPointXY[0], npPointXY[1], linestyle='None',markersize=6, marker='o',color='sienna', transform=rotation + base)
-    # ax.plot((npPointXY[0][0], npPointXY[0][-1]), (npPointXY[1][0], npPointXY[1][-1]), color='red',transform=rotation + base, linewidth=5)
+    #     tmp = npPointXY_last
+    #     npPointXY_last = npPointXY
+    #     npPointXY_llast = tmp
+    # elif count_index==2:
+    #     npPointXY_last = npPointXY
+    # else:
+    #     npPointXY_llast = npPointXY
+    # ax.plot(npPointXY[0], npPointXY[1], linestyle='None',markersize=6, marker='o',color='sienna', transform=rotation + base)
+    # # ax.plot((npPointXY[0][0], npPointXY[0][-1]), (npPointXY[1][0], npPointXY[1][-1]), color='red',transform=rotation + base, linewidth=5)
     
-    # textWidth = "[Width: "+str(math.trunc(float(npPointXY[1][0]*1000-npPointXY[1][-1]*1000)))+"mm]"
-    # plt.text(0.65,0.6, textWidth, transform=ax.transAxes,fontsize=18)
+    # # textWidth = "[Width: "+str(math.trunc(float(npPointXY[1][0]*1000-npPointXY[1][-1]*1000)))+"mm]"
+    # # plt.text(0.65,0.6, textWidth, transform=ax.transAxes,fontsize=18)
     
     
     
-    # plt.scatter(npPointXY[0], npPointXY[1], c='b', transform=rotation + base)
-    # plt.scatter(gps2D[0]-GPS_x, gps2D[1]-GPS_y, c='r',transform=rotation + base, s=200, marker='*')
-    # plt.scatter(tx, ty, c='r',transform=rotation + base, s=200, marker='*')
-    plt.title(str(textStamp), fontsize = 25)
-    plt.xlim((-2.5, 1))
-    plt.ylim((2.5, 12))
-    # plt.xlim((3, 9))
-    # plt.ylim((6, 20))
-    # plt.xlim((-2778360, -2778335))
-    # plt.ylim((256076, 256088))
-        # plt.xlim((352882,352898))
-        # plt.ylim((2767708,2767718))
-    ax.ticklabel_format(useOffset=False, style='sci')
-    plt.savefig(file_path+"tree_and_odom"+str(file_index/10) +'_'+str(int(file_index%10))+".png", dpi=100)
+    # # plt.scatter(npPointXY[0], npPointXY[1], c='b', transform=rotation + base)
+    # # plt.scatter(gps2D[0]-GPS_x, gps2D[1]-GPS_y, c='r',transform=rotation + base, s=200, marker='*')
+    # # plt.scatter(tx, ty, c='r',transform=rotation + base, s=200, marker='*')
+    # plt.title(str(textStamp), fontsize = 25)
+    # plt.xlim((-2.5, 1))
+    # plt.ylim((2.5, 12))
+    # # plt.xlim((3, 9))
+    # # plt.ylim((6, 20))
+    # # plt.xlim((-2778360, -2778335))
+    # # plt.ylim((256076, 256088))
+    #     # plt.xlim((352882,352898))
+    #     # plt.ylim((2767708,2767718))
+    # ax.ticklabel_format(useOffset=False, style='sci')
+    # # plt.savefig(file_path+"tree_and_odom"+str(file_index/10) +'_'+str(int(file_index%10))+".png", dpi=100)
     print("save!")
     # np.save(file_path + 'npyXZ_' + str(int(file_index/10))+'_'+str(int(file_index%10)), npPointXZ)
     # np.save(file_path + 'npyGPS_' + str(int(file_index/10))+'_'+str(int(file_index%10)), gps2D)
@@ -327,21 +335,21 @@ class Synchronize:
         self.flagGPS = True
 
     def show(self):
-        if (self.flagDepth and self.flagColor and self.flagGPS) == True:
+        if (self.flagDepth and self.flagColor) == True:
             print("Enter: "+str(count))
             # print("reveive both color and depth")
             self.imgColor = msg2CV(self.msgColor)
             self.imgDepth = msg2CV(self.msgDepth)
-            np.save(file_path + 'npyD_' + str(int(index/10))+'_'+str(int(index%10)), self.imgDepth)
-            np.save(file_path + 'npyC_'+ str(int(index/10))+'_'+str(int(index%10)), self.imgColor)
+            # np.save(file_path + 'npyD_' + str(int(index/10))+'_'+str(int(index%10)), self.imgDepth)
+            # np.save(file_path + 'npyC_'+ str(int(index/10))+'_'+str(int(index%10)), self.imgColor)
             # cv2.imwrite(file_path + 'c_'+str(int(index/10))+'_'+str(int(index%10)) + '.jpg', self.imgColor)
             
             try:
-                (trans,rot) = self.listener.lookupTransform('/odom', '/base_footprint', rospy.Time(0)) # observer_frame, goal_frame
+                (trans,rot) = self.listener.lookupTransform('/map', '/base_link', rospy.Time(0)) # observer_frame, goal_frame
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 print("not receive tf...")
 
-            # fnGroundSeg(self.imgColor, self.imgDepth, self.index, self.stamp, self.gps2D, trans,rot)
+            fnGroundSeg(self.imgColor, self.imgDepth, self.index, self.stamp, self.gps2D, trans,rot)
         else: 
             print("wait for color or depth")
 
@@ -360,7 +368,6 @@ def cbDepth(msg):
         count += 1
     index = index+1
     
-
 def cbColor(msg):
     global file_path, synchronizer
     synchronizer.colorIn(msg)
