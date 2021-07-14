@@ -310,7 +310,6 @@ rostopic pub syscommand std_msgs/String "savegeotiff"
 2. run in MD601 (6.5m/10m)
 3. run in outdoor library
 4. remove frames
-5. hector_trajectory_server
 
 ```
 # in my computer
@@ -333,6 +332,11 @@ roslaunch realsense2_camera depth2pc.launch
 ## 0713
 1. roslaunch depth_app tf_reframe.launch => remove map_yun
 2. change gmapping field of view
-3. finally understand hector_traj: 
-4. depth_image replace of align_depth: is it ok to reproduce?
-5. what is nodelet: 
+3. finally understand hector_trajectory_server and geotiff: use plugin
+4. depth_image replace of align_depth: is it ok to reproduce? [https://github.com/IntelRealSense/librealsense/blob/jupyter/notebooks/distance_to_object.ipynb]
+5. what is nodelet: 在graph結構中以topic,service和param的方式傳輸資料，天生的資料互動存在一定的延時和阻塞。Nodelet 包就是改善這一狀況設計的
+6. latched: means when a connection is latched, the last message published is saved and automaticlly sent to any future subscribers that connect. This is useful for slow-changing to static data like a map.
+
+## 0714
+1. build two Gazebo world (nearLake, inHill)
+2. how many beams I have? (680)
