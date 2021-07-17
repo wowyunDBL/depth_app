@@ -358,3 +358,13 @@ int offset = (int)(cam_model.cy()-scan_height/2 - scan_height) @ DepthImageToLas
 3. install realsense and RTAB in computer
 4. camera calibration
 sudo find / -name librealsense2_camera.so
+
+```
+Setting Dynamic reconfig parameters.
+/opt/ros/noetic/lib/nodelet/nodelet: symbol lookup error: /home/ncslaber/realSense/realsense_ws/devel/lib//librealsense2_camera.so: undefined symbol: _ZN20ddynamic_reconfigure19DDynamicReconfigureC1ERKN3ros10NodeHandleE
+[camera/realsense2_camera_manager-2] process has died [pid 6684, exit code 127, cmd /opt/ros/noetic/lib/nodelet/nodelet manager __name:=realsense2_camera_manager __log:=/home/ncslaber/.ros/log/8ea8edbc-e6e0-11eb-a463-abb9b2d86780/camera-realsense2_camera_manager-2.log].
+log file: /home/ncslaber/.ros/log/8ea8edbc-e6e0-11eb-a463-abb9b2d86780/camera-realsense2_camera_manager-2*.log
+^C[camera/realsense2_camera-3] killing on exit
+[ WARN] [1626513774.069166571]: Couldn't find service realsense2_camera_manager/unload_nodelet, perhaps the manager is already shut down
+
+```
