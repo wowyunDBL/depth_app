@@ -255,7 +255,6 @@ rosservice call /outdoor_waypoint_nav/datum
    z: 0.0
    w: 1.0"
 ```
-rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=husky_velocity_controller/cmd_vel _repeat_rate:=10.0
 
 roslaunch realsense2_camera rs_aligned_depth.launch
 roslaunch realsense2_camera depth2pc.launch
@@ -340,3 +339,22 @@ roslaunch realsense2_camera depth2pc.launch
 ## 0714
 1. build two Gazebo world (nearLake, inHill)
 2. how many beams I have? (680)
+
+## 0715
+setCurrentKeyFrame: 
+
+## 0716
+1. RTAB 
+	* issue: capture moving people
+	* first localization and then mapping
+	* localization mode: use odom?
+
+## 0717
+1. change height of laser
+```
+int offset = (int)(cam_model.cy()-scan_height/2 - scan_height) @ DepthImageToLaserScan.h
+```
+2. implement AMCL, which is not so bad (??
+3. install realsense and RTAB in computer
+4. camera calibration
+sudo find / -name librealsense2_camera.so
