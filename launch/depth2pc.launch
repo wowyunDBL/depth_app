@@ -5,7 +5,7 @@
   <!-- Run the depthimage_to_laserscan node -->
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
     <!--input depth img-->
-     <remap from="image" to="/camera/aligned_depth_to_color/image_raw"/>
+     <remap from="image" to="/camera/depth/image_rect_raw"/>
     <!--out the lidar rostopic-->
     <remap from="scan" to="/scan" /> 
     <!--The number of pixel rows to use to generate the laserscan.-->
@@ -17,7 +17,7 @@
     <!--Maximum ranges to return in meters. Ranges greater than this will be output as +Inf.-->
     <param name="range_max" value="60"/>
 
-    <param name="output_frame_id" value="camera_aligned_depth_to_color_frame"/> <!--camera_depth_frame-->
+    <param name="output_frame_id" value="camera_depth_frame"/> <!--camera_depth_frame-->
   </node>
   
   <!--point cloud 3D>

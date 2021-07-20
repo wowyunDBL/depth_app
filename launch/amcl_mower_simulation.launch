@@ -1,6 +1,6 @@
 <launch>
   <!-- Arguments -->
-  <arg name="map_file" default="$(find depth_app)/maps/simulation_gmapping_m.yaml"/>
+  <arg name="map_file" default="$(find depth_app)/maps/nearLake.yaml"/>
   <arg name="open_rviz" default="true"/>
   <arg name="set_map_frame" default="map"/>
   

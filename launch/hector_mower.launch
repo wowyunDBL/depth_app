@@ -38,7 +38,7 @@
     <param name="laser_z_min_value"          value= "-0.1" />
     <param name="laser_z_max_value"          value= "0.1" />
     <param name="laser_min_dist"             value="0.12" />
-    <param name="laser_max_dist"             value="3.5" />
+    <param name="laser_max_dist"             value="4.5" />
 
     <!-- Advertising config -->
     <param name="advertise_map_service"      value="true"/> 
@@ -52,4 +52,18 @@
       <param name="pub_debug_output" value="true"/>
     -->
   </node>
+
+  <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find depth_app)/rviz/hector.rviz"/>
+
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
+    <remap from="image" to="/camera/depth/image_rect_raw"/>
+    <remap from="scan" to="/scan" /> 
+    <param name="scan_height" value="40"/>
+    <param name="scan_time" value="0.03"/>
+    <param name="range_min" value="0.4"/>
+    <param name="range_max" value="6"/>
+    <param name="output_frame_id" value="camera_depth_frame"/>
+  </node>
+
 </launch>

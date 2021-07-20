@@ -205,7 +205,7 @@ sudo apt-get install ros-kinetic-rtabmap-ros
 ```
 
 ```
-roslaunch rtabmap_ros rtabmap.launch \
+roslaunch rtabmap_ros rtabmap_mine.launch \
     rtabmap_args:="--delete_db_on_start" (approx_sync:=false)
 
 # for localization mode
@@ -359,6 +359,9 @@ int offset = (int)(cam_model.cy()-scan_height/2 - scan_height) @ DepthImageToLas
 4. camera calibration
 sudo find / -name librealsense2_camera.so
 
+## 0718
+### repeatedly install realsense... and the .bashrc kill other work space?
+
 ```
 Setting Dynamic reconfig parameters.
 /opt/ros/noetic/lib/nodelet/nodelet: symbol lookup error: /home/ncslaber/realSense/realsense_ws/devel/lib//librealsense2_camera.so: undefined symbol: _ZN20ddynamic_reconfigure19DDynamicReconfigureC1ERKN3ros10NodeHandleE
@@ -366,5 +369,44 @@ Setting Dynamic reconfig parameters.
 log file: /home/ncslaber/.ros/log/8ea8edbc-e6e0-11eb-a463-abb9b2d86780/camera-realsense2_camera_manager-2*.log
 ^C[camera/realsense2_camera-3] killing on exit
 [ WARN] [1626513774.069166571]: Couldn't find service realsense2_camera_manager/unload_nodelet, perhaps the manager is already shut down
+
+```
+
+```
+sudo mv librealsense2.so librealsense2_old.so
+dpkg -l | grep "realsense" | cut -d " " -f 3 | xargs sudo dpkg --purge # remove all realsense
+dpkg -l | grep
+sudo apt-get install librealsense2-dkms=2.45.0
+```
+
+```
+export LD_LIBRARY_PATH=/where/you/install/lib:$LD_LIBRARY_PATH
+sudo ldconfig
+```
+
+```
+pip install pyshp #shapefile
+pip install googleearthplot
+echo $ROS_PACKAGE_PATH
+python3 navsat2kml.py --bag 2021-07-14-18-37-26.bag
+```
+
+```
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+roslaunch realsense2_camera combine_camera_laptop.launch
+roslaunch rtabmap_ros rtabmap.launch rtabmap_args:="--delete_db_on_start"
+```
+
+```
+ntpdate -q other_computer_ip
+rosmsg show move_base_msgs/MoveBaseActionGoal
+rostopic pub /move_base/goal move_base_msgs/MoveBaseActionGoal "header:al move_base_msgs/MoveBaseActionGoal
+
+Failed to load library /home/ncslaber/rtab_ws/catkin_ws/devel/lib//librtabmap_rviz_plugins.so. Make sure that you are calling the PLUGINLIB_EXPORT_CLASS macro in the library code, and that names are consistent between this macro and your XML. Error string: Could not load library (Poco exception = librealsense2.so.2.45: cannot open shared object file: No such file or directory)
+
+process[rtabmap/rtabmap-1]: started with pid [26413]
+/home/ncslaber/rtab_ws/catkin_ws/devel/lib/rtabmap_ros/rtabmap: error while loading shared libraries: librealsense2.so.2.45: cannot open shared object file: No such file or directory
+process[rviz-2]: started with pid [26414]
+process[points_xyzrgb-3]: started with pid [26415]
 
 ```
