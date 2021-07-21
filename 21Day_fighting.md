@@ -409,4 +409,14 @@ process[rtabmap/rtabmap-1]: started with pid [26413]
 process[rviz-2]: started with pid [26414]
 process[points_xyzrgb-3]: started with pid [26415]
 
+setting /run_id to 35ad3b7a-e94a-11eb-b2ed-5b5600eaf55d
+process[rosout-1]: started with pid [8780]
+started core service [/rosout]
+process[rtabmap/rtabmap-2]: started with pid [8787]
+process[rviz-3]: started with pid [8788]
+process[points_xyzrgb-4]: started with pid [8789]
+type is rtabmap_ros/point_cloud_xyzrgb
+
 ```
+
+roslaunch depth_app amcl_mower.launch

@@ -4,16 +4,16 @@
   <arg name="open_rviz" default="true"/>
   <arg name="set_map_frame" default="map_yun"/>
 
-  <!-- Run the depthimage_to_laserscan node >
+  <!-- Run the depthimage_to_laserscan node -->
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
-    <remap from="image" to="/camera/aligned_depth_to_color/image_raw"/>
+    <remap from="image" to="/camera/depth/image_rect_raw"/>
     <remap from="scan" to="/scan"/> 
     <param name="scan_height" value="40"/>
     <param name="scan_time" value="0.03"/>
     <param name="range_min" value="0.4"/>
     <param name="range_max" value="6"/>
-    <param name="output_frame_id" value="camera_link"/>
-  </node-->
+    <param name="output_frame_id" value="camera_depth_frame"/>
+  </node>
 
   <!-- Map server -->
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)">
@@ -21,7 +21,7 @@
   </node>
 
   <!-- AMCL -->
-  <include file="$(find depth_app)/launch/amcl_config_mower.launch"/>
+  <include file="$(find depth_app)/launch/amcl_config_mower_test.launch"/>
 
   <!-- rviz -->
   <group if="$(arg open_rviz)"> 

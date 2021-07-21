@@ -1,5 +1,16 @@
 <launch>
   
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
+    <remap from="image" to="/camera/aligned_depth_to_color/image_raw"/>
+    <remap from="scan" to="/scan"/> 
+    <param name="scan_height" value="40"/>
+    <param name="scan_time" value="0.03"/>
+    <param name="range_min" value="0.4"/>
+    <param name="range_max" value="6"/>
+    <param name="output_frame_id" value="camera_link"/>
+  </node>
+
+
   <!--point cloud 3D>
   <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager" />
 
@@ -12,8 +23,8 @@
   <!--camera frame-->
   <!--node pkg="tf" type="static_transform_publisher" name="cam_link_broadcaster" args="0 0 0.36 0 0 0 base_footprint camera_link 100" /-->
 	
-  <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
+  <!--node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
     <rosparam command="load" file="$(find depth_app)/config/lidar_config.yaml"/>
     <remap from="base_scan" to="scan"/>
-  </node>
+  </node-->
 </launch>
