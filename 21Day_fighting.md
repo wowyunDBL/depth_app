@@ -420,3 +420,9 @@ type is rtabmap_ros/point_cloud_xyzrgb
 ```
 
 roslaunch depth_app amcl_mower.launch
+
+## 0723
+run path_planning.py
+run plot_pickle.py
+modify get_path.py
+run kmlshp2ursrobotshp.py # to change format
