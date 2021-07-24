@@ -426,3 +426,15 @@ run path_planning.py
 run plot_pickle.py
 modify get_path.py
 run kmlshp2ursrobotshp.py # to change format
+
+## 0724
+```
+def writeShapeFile(output, folder_name='test'):
+    w = shapefile.Writer(folder_name)
+    w.multipoint(output)
+    w.field('WAYPOINT', 'C', '40')
+    w.record('Waypoint')
+    w.close()
+
+```
+

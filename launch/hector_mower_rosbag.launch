@@ -56,7 +56,9 @@
   <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find depth_app)/rviz/hector.rviz"/>
 
-  <!--node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
+  <node pkg="depth_app" type="cbGPS_initial.py" name="cbGPS_initial" output="screen"/>
+
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
     <remap from="image" to="/camera/depth/image_rect_raw"/>
     <remap from="scan" to="/scan" /> 
     <param name="scan_height" value="20"/>
@@ -64,6 +66,6 @@
     <param name="range_min" value="0.4"/>
     <param name="range_max" value="6"/>
     <param name="output_frame_id" value="camera_depth_frame"/>
-  </node-->
+  </node>
 
 </launch>

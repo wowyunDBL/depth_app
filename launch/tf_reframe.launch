@@ -1,5 +1,5 @@
 <launch>
-  <arg name="bag_filename"  default="/home/ncslaber/109-2/0714_mower/2021-07-14-18-37-26.bag"/>
+  <arg name="bag_filename"  default="/home/ncslaber/109-2/0714_mower/2021-07-14-18-37-26_filtered.bag"/>
 
   <node name="playbag" pkg="rosbag" type="play" args="--clock $(arg bag_filename)" output="screen"> <!---r 0.5-->>
     <remap from="tf" to="tf_in" />
@@ -11,5 +11,7 @@
       - map_yun
     </rosparam>
   </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="camera_depth_pub" args="0.26 0 0.3 0 0 0 base_link camera_depth_frame 100" />
 
 </launch>
