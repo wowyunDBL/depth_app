@@ -437,4 +437,10 @@ def writeShapeFile(output, folder_name='test'):
     w.close()
 
 ```
+## 0725
+1. NTU record
+2021-07-25-17-01-45.bag: test1/N1, not record all trajectory since there are so many misquitos!!!   
+2021-07-25-17-42-59.bag: test2/N2, mapping in computer
+2021-07-25-18-01-19.bag: nano(save in drive0725), mapping in nano
+2021-07-25-18-23-39.bag: test3/N3, mapping in computer
 
