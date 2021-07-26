@@ -1,7 +1,9 @@
 ```
 (nano)
 roslaunch realsense2_camera combine_camera_laser_hector.launch
-roslaunch realsense2_camera hector_mower.launch
+rosbag record
+# roslaunch realsense2_camera hector_mower.launch
+
 (laptop)
 roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
 ./demo.sh
