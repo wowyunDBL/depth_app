@@ -444,3 +444,31 @@ def writeShapeFile(output, folder_name='test'):
 2021-07-25-18-01-19.bag: nano(save in drive0725), mapping in nano
 2021-07-25-18-23-39.bag: test3/N3, mapping in computer
 
+## 0727
+2021-07-27-11-49-26.bag: test1 in the middle then start
+2021-07-27-12-00-37.bag: test2, radius circle issue (same tree, diff circle)
+2021-07-27-12-12-15.bag: use 0.6 speed (may change speed!!!)
+```
+# It is so cool to write like this: turtlebot3_teleop/CMakeLists.txt
+################################################################################
+# Set minimum required version of cmake, project name and compile options
+################################################################################
+cmake_minimum_required(VERSION 2.8.3)
+project(turtlebot3_teleop)
+
+################################################################################
+# Find catkin packages and libraries for catkin and system dependencies
+################################################################################
+find_package(catkin REQUIRED COMPONENTS
+  rospy
+  geometry_msgs
+)
+
+################################################################################
+# Install
+################################################################################
+catkin_install_python(PROGRAMS
+  nodes/turtlebot3_teleop_key
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+```

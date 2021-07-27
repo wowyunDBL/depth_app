@@ -55,7 +55,7 @@
 
   <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find depth_app)/rviz/hector.rviz"/>
-
+  <node pkg="depth_app" type="cbGPS_initial.py" name="cbGPS_initial" output="screen"/>
   <!--node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
     <remap from="image" to="/camera/depth/image_rect_raw"/>
     <remap from="scan" to="/scan" /> 
