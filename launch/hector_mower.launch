@@ -2,8 +2,8 @@
   <arg name="odom_frame" default="map"/> <!---->
   <arg name="base_frame" default="base_link"/> <!---->
   <arg name="scan_subscriber_queue_size" default="5"/>
-  <arg name="scan_topic" default="/scan"/>
-  <arg name="map_size" default="1024"/><!--2048-->
+  <arg name="scan_topic" default="/scan_filtered"/> <!--/scan_filtered-->
+  <arg name="map_size" default="2048"/><!--2048-->
   <arg name="pub_map_odom_transform" default="false"/> <!---->
   <arg name="tf_map_scanmatch_transform_frame_name" default="scanmatcher_frame"/>
 
@@ -13,7 +13,7 @@
     <param name="map_frame"  value="map" /> <!---->
     <param name="odom_frame" value="$(arg odom_frame)" />
     <param name="base_frame" value="$(arg base_frame)" />
-    <param name="map_with_known_poses" value="true" /> <!---->
+    <param name="map_with_known_poses" value="true" /> <!--false-->
     
     <!-- Tf use -->
     <param name="use_tf_scan_transformation"  value="true"/>
@@ -25,20 +25,20 @@
     <!-- Map size / start point -->
     <param name="map_resolution" value="0.050"/>
     <param name="map_size"       value="$(arg map_size)"/>
-    <param name="map_start_x"    value="0.5"/>
-    <param name="map_start_y"    value="0.5" />
-    <param name="map_multi_res_levels" value="2" />
+    <param name="map_start_x"    value="0.3"/>
+    <param name="map_start_y"    value="0.7" />
+    <param name="map_multi_res_levels" value="1" />
 
     <!-- Map update parameters -->
-    <param name="update_factor_free"         value="0.4"/>
+    <param name="update_factor_free"         value="0.48"/>
     <param name="update_factor_occupied"     value="0.9" />   
     <param name="map_update_distance_thresh" value="0.1"/>
     <param name="map_update_angle_thresh"    value="0.04" />
-    <param name="map_pub_period"             value="2" />
+    <param name="map_pub_period"             value="5" />
     <param name="laser_z_min_value"          value= "-0.1" />
     <param name="laser_z_max_value"          value= "0.1" />
     <param name="laser_min_dist"             value="0.12" />
-    <param name="laser_max_dist"             value="5" />
+    <param name="laser_max_dist"             value="9" /> <!--7/5-->
 
     <!-- Advertising config -->
     <param name="advertise_map_service"      value="true"/> 
@@ -56,14 +56,20 @@
   <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find depth_app)/rviz/hector.rviz"/>
   <node pkg="depth_app" type="cbGPS_initial.py" name="cbGPS_initial" output="screen"/>
-  <!--node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
+  
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
     <remap from="image" to="/camera/depth/image_rect_raw"/>
     <remap from="scan" to="/scan" /> 
     <param name="scan_height" value="20"/>
     <param name="scan_time" value="0.03"/>
     <param name="range_min" value="0.4"/>
-    <param name="range_max" value="6"/>
+    <param name="range_max" value="60"/> <!--60/6-->
     <param name="output_frame_id" value="camera_depth_frame"/>
-  </node-->
-
+  </node>
+  
+  <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
+    <rosparam command="load" file="$(find depth_app)/config/lidar_config.yaml"/>
+    <remap from="base_scan" to="scan"/>
+  </node>
+  
 </launch>
