@@ -171,7 +171,8 @@ catkin_install_python(PROGRAMS
    scripts/motion_controller.py
    scripts/repub_depth.py
    scripts/repub_tf.py
-   scripts/tf_remove_frames.py
+   #scripts/tf_remove_frames.py
+   scripts/cbGPS_initial.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

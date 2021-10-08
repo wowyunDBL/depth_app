@@ -15,15 +15,17 @@ def msg2CV(msg):
 
 def cbDepth(msg):
     imageArray = msg2CV(msg)
-    print(type(imageArray[240][0]))
-    print(imageArray[240][0])
-    print("---------")
-    print(type(imageArray[240][1]))
-    print(imageArray[240][1])
+    a=msg.data
+    print(a.size)
+    # print(type(imageArray[240][0]))
+    # print(imageArray[240][0])
+    # print("---------")
+    # print(type(imageArray[240][1]))
+    # print(imageArray[240][1])
 
 if __name__ == "__main__":
     rospy.init_node("depthHandler", anonymous=True)
-    subDepth = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw", Image, cbDepth)
+    subDepth = rospy.Subscriber("/camera/depth/image_rect_raw", Image, cbDepth)
     # subColor = rospy.Subscriber("/camera/color/image_raw", Image, cbColor)
     print("successfully initialized!")
     # print("Python version: ",sys.version)

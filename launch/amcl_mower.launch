@@ -1,20 +1,19 @@
 <launch>
   <!-- Arguments -->
-  <arg name="map_file" default="/home/ncslaber/hector_path_all.yaml"/> <!--$(find depth_app)/maps/gmapping_6m-->
+  <arg name="map_file" default="/home/ncslaber/109-2/210725_NTU_leftAreaLibrary/ntu_test3_2021-07-25-18-23-39/height_0.yaml"/> <!--$(find depth_app)/maps/gmapping_6m-->
   <arg name="open_rviz" default="true"/>
   <arg name="set_map_frame" default="map_yun"/>
 
-  <!-- Run the depthimage_to_laserscan node >
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
-    <remap from="image" to="/camera/aligned_depth_to_color/image_raw"/>
-    <remap from="scan" to="/scan"/> 
-    <param name="scan_height" value="40"/>
+    <remap from="image" to="/camera/depth/image_rect_raw"/>
+    <remap from="scan" to="/scan" /> 
+    <param name="scan_height" value="20"/>
     <param name="scan_time" value="0.03"/>
     <param name="range_min" value="0.4"/>
-    <param name="range_max" value="6"/>
-    <param name="output_frame_id" value="camera_link"/>
-  </node-->
-
+    <param name="range_max" value="60"/> <!--60/6-->
+    <param name="output_frame_id" value="camera_depth_frame"/>
+  </node>
+  
   <!-- Map server -->
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)">
     <param name="frame_id"  value="$(arg set_map_frame)"/>

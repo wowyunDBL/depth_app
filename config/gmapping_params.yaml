@@ -1,5 +1,5 @@
 map_update_interval: 2.0
-maxUrange: 10.0
+maxUrange: 5.0
 sigma: 0.05
 kernelSize: 1
 lstep: 0.05
@@ -9,10 +9,10 @@ lsigma: 0.075
 ogain: 3.0
 lskip: 0
 minimumScore: 50
-srr: 0.1
-srt: 0.2
-str: 0.1
-stt: 0.2
+srr: 0.001
+srt: 0.002
+str: 0.001
+stt: 0.002
 linearUpdate: 0.5
 angularUpdate: 0.4
 temporalUpdate: 2.0
@@ -27,6 +27,6 @@ llsamplerange: 0.01
 llsamplestep: 0.01
 lasamplerange: 0.005
 lasamplestep: 0.005
-maxRange: 10.5
+maxRange: 5.5
 transform_publish_period: 0.05
 

@@ -5,7 +5,7 @@ from sensor_msgs.msg import Image, CameraInfo
 import sys
 if sys.platform.startswith('linux'): # or win
     print("in linux")
-    file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/p_1_45_center2/"
+    file_path = "/home/ncslaber/109-2/210816_NTU_half/"
     # print(sys.path)
 # import message_filters
 
@@ -281,8 +281,9 @@ class Synchronize:
             print("yes")
             self.imgColor = msg2CV(self.msgColor)
             self.imgDepth = msg2CV(self.msgDepth)
-            # np.save(file_path + str(int(index/10))+'_'+str(int(index%10)), self.imgDepth)
-            fnGroundSeg(self.imgColor, self.imgDepth, self.index)
+            np.save(file_path + "depth", self.imgDepth)
+            np.save(file_path + "color", self.imgColor)
+            # fnGroundSeg(self.imgColor, self.imgDepth, self.index)
         else: 
             print("not yet")
 
@@ -316,7 +317,7 @@ def cbColor(msg):
 
 if __name__ == "__main__":
     rospy.init_node("depthHandler", anonymous=True)
-    subDepth = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw", Image, cbDepth)
+    subDepth = rospy.Subscriber("/camera/depth/image_rect_raw", Image, cbDepth)
     subColor = rospy.Subscriber("/camera/color/image_raw", Image, cbColor)
     print("successfully initialized!")
     # print("Python version: ",sys.version)

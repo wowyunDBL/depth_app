@@ -17,7 +17,7 @@
     <param name="output_frame_id" value="camera_depth_frame"/>
   </node>
   
-  <!--point cloud 3D>
+  <!--point cloud 3D-->
   <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager" />
 
   <node pkg="nodelet" type="nodelet" name="nodelet1"
@@ -25,9 +25,9 @@
     <remap from="camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
     <remap from="image_rect" to="/camera/aligned_depth_to_color/image_raw"/>
     <remap from="points" to="/camera/depth/points"/>
-  </node-->
+  </node>
   <!--camera frame-->
-  <!--node pkg="tf" type="static_transform_publisher" name="cam_link_broadcaster" args="0 0 0.36 0 0 0 base_footprint camera_link 100" /-->
+  <node pkg="tf" type="static_transform_publisher" name="cam_link_broadcaster" args="0 0 0.36 0 0 0 base_footprint camera_link 100" />
 	
     <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find depth_app)/rviz/check_pointCloud.rviz"/>
@@ -36,4 +36,5 @@
       <rosparam command="load" file="$(find depth_app)/config/lidar_config.yaml"/>
     <remap from="base_scan" to="scan"/>
   </node>
+  
 </launch>

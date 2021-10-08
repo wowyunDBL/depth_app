@@ -1,0 +1,2 @@
+float32 obs_min_dist
+float32 obs_width
