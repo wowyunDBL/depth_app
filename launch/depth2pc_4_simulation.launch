@@ -12,7 +12,7 @@
     <!--Minimum ranges to return in meters. Ranges less than this will be output as -Inf.-->
     <param name="range_min" value="0.45"/>
     <!--Maximum ranges to return in meters. Ranges greater than this will be output as +Inf.-->
-    <param name="range_max" value="12.0"/>
+    <param name="range_max" value="60.0"/>
 
     <param name="output_frame_id" value="camera_depth_frame"/>
   </node>
