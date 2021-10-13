@@ -54,7 +54,7 @@
   </node>
 
   <node pkg="rviz" type="rviz" name="rviz" required="true"
-          args="-d $(find depth_app)/rviz/hector.rviz"/>
+          args="-d $(find depth_app)/rviz/hector_simulation.rviz"/>
   
   
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">

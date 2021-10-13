@@ -13,7 +13,7 @@
     <param name="map_frame"  value="map" /> <!---->
     <param name="odom_frame" value="$(arg odom_frame)" />
     <param name="base_frame" value="$(arg base_frame)" />
-    <param name="map_with_known_poses" value="true" /> <!--false-->
+    <param name="map_with_known_poses" value="false" /> <!--false-->
     
     <!-- Tf use -->
     <param name="use_tf_scan_transformation"  value="true"/>
@@ -55,7 +55,7 @@
 
   <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find depth_app)/rviz/hector.rviz"/>
-  <node pkg="depth_app" type="cbGPS_initial.py" name="cbGPS_initial" output="screen"/>
+  <!--node pkg="depth_app" type="cbGPS_initial.py" name="cbGPS_initial" output="screen"/-->
   
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
     <remap from="image" to="/camera/depth/image_rect_raw"/>
