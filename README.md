@@ -2,7 +2,16 @@
 
 https://blog.miniasp.com/post/2018/05/28/Git-Credential-Howto  
 
-## current command
+## how to use
+### for gazebo
+```
+rosrun map_server map_saver -f ~/map
+roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+roslaunch depth_app hector_mower_simulation.launch
+```
+
+## ros command
 ```
 rostopic pub /imu_filter/calib_comp/calib_request std_msgs/UInt8 "data: 1"
 
@@ -30,7 +39,7 @@ rosrun rosbag_to_csv rosbag_to_csv.py
 ├── gmapping_mower_4_simulation.launch # mapping
 ├── hector_mower.launch  # mapping
 ├── map_server.launch
-├── map_traj.launch
+├── map_traj.launch  # hector_trajectory_server, use rostopic pub syscommand std_msgs/String "savegeotiff" to record
 └── tf_reframe.launch   # play rosbag and remove tf
 ```
 ### /scripts
