@@ -6,6 +6,7 @@
 *.bag
 output
 
+__pycache__
 *.rviz
 
 # Compiled Object files
