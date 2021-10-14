@@ -1,12 +1,12 @@
 # Prerequisites
-.vscode
+.vscode/
 *.d
 *.pyc
 *.zip
 *.bag
 output
 
-__pycache__
+__pycache__/
 *.rviz
 
 # Compiled Object files
