@@ -62,7 +62,11 @@ rosrun rosbag_to_csv rosbag_to_csv.py
 ├── pointCloud_filter.py
 
 ```
-
+### /scripts
+```
+.
+├── laserScan_test.cpp  # test dpethimage to laser with height segmentation
+```
 ## python installation
 python -m pip install numpy
 python-3.6 -m pip install numpy

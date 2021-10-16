@@ -10,7 +10,7 @@ file_path = "/home/ncslaber/109-2/tree_experiment/npy_depth/sta/"
 def write2CSV(file_name, data):
     with open(file_name + '.csv', 'a+') as csvfile: # or w
         writer = csv.writer(csvfile)
-        writer.writerows(np.reshape(data,(640,480)))
+        writer.writerows(np.reshape(data,(480,640)))
 
 def write2CSV_column(file_name, data):
     with open(file_name + '.csv', 'a+') as csvfile: # or w
@@ -93,6 +93,6 @@ def plot3D_color_surface(npDepth):
 
 if __name__ == '__main__':
 
-    fDepth = np.load('/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth/2.npy')
-    write2CSV('/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth-2',fDepth)
+    fDepth = np.load('/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth/10.npy')
+    write2CSV('/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth-10',fDepth)
     pass
