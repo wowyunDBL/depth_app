@@ -93,6 +93,6 @@ def plot3D_color_surface(npDepth):
 
 if __name__ == '__main__':
 
-    fDepth = np.load('/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth/10.npy')
-    write2CSV('/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth-10',fDepth)
+    fDepth = np.load('/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth/30.npy')
+    write2CSV('/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth-30',fDepth)
     pass
