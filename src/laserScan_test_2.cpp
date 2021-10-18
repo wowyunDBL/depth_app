@@ -25,7 +25,7 @@ void read_depth_image(Eigen::MatrixXf& fdepth, int rows, int cols){
     double value;
 
     ifstream inFile;
-	inFile.open("/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth-30.csv");
+	inFile.open("/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth-2.csv");
     // inFile.open("/home/ncslaber/110-1/211010_scanMatching/test.csv");
 	if (inFile.is_open())
 	{
@@ -98,6 +98,12 @@ double use_point( vector<struct gridValueStruct> vec_gridValueStruct, bool flag 
     return value;
 }
 
+void writeToCSVfile(string name, MatrixXd matrix)
+{
+    ofstream file(name.c_str());
+    file << matrix.format(CSVFormat);
+ }
+
 int main(){
     int rows=480, cols=640;
     // int rows=2, cols=3;
@@ -120,56 +126,33 @@ int main(){
     double cy_d = 241.57083129882812;
     double fx_d = 384.31365966796875;
     double fy_d = 384.31365966796875;
-    
-    Eigen::ArrayXf npPointX = Eigen::ArrayXf::LinSpaced(cols, 0, cols-1);//.transpose() 
-    npPointX = npPointX + cx_d;
-    // npPointX = np.asarray(range(640))-cx_d
-    Eigen::MatrixXf npPointMX( npPointX.matrix().asDiagonal() ); 
-    // npPointX = np.diag(npPointX)
-    npPointMX = fdepth*npPointMX / fx_d * (-1);
-    // cout << npPointMX;
 
-    Eigen::ArrayXf npPointY = Eigen::ArrayXf::LinSpaced(rows, 0, rows-1);//.transpose() 
-    npPointY = npPointY - cy_d;
-    // npPointY = np.asarray(range(480))-cy_d
-    Eigen::MatrixXf npPointMY( npPointY.matrix().asDiagonal() ); 
-    // npPointY = np.diag(npPointY)
     double theta = 0./180.*3.1415926;
-    npPointMY = npPointMY*fdepth/ fy_d * (-1);
-    npPointMY = npPointMY * cos(theta) + fdepth * sin(theta);
-    npPointMY = npPointMY.array() + 410.0;
-        // cout << npPointMY <<endl;
-    // npPointMY = npPointMY.astype('float16')
-    // npHeight = np.copy(npPointMY)
-    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> foo1 = npPointMY.array()<500; //
-    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> foo2 = npPointMY.array()>300; //
-    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> foo3 = npPointMY.array()!=410;
-    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> height_layer = (foo1.array() * foo2.array()).matrix();
-    height_layer = (height_layer.array() * foo3.array()).matrix();
-        // cout<<height_layer;
+        
+    /*Eigen::ArrayXf npPointX = Eigen::ArrayXf::LinSpaced(cols, 0, cols-1); //.transpose() 
+    npPointX = npPointX + cx_d;
+    Eigen::MatrixXf npPointMX( npPointX.matrix().asDiagonal() ); 
+    npPointMX = fdepth*npPointMX / fx_d * (-1);*/
     
-    // cout << height_layer.array().any() << endl;
-    // for(int v = 0; v < rows; ++v)
-    // {
-    //     if (height_layer.row(v).array().any()) //
-    //     {
-    //         for (int u = 0; u<cols; ++u) // Loop over each pixel in row
-    //         {   
-    //             if (height_layer(v,u) == true)
-    //             {
-    //                 cout<<"a";
-    //             }
-    //         }
-    //     }
-    // }
-    
-    // height_layer_tmp = np.logical_and(npHeight<500,npHeight>300)
-    // height_layer = np.logical_and(height_layer_tmp,npHeight!=410)
-    //
-    // for(int v = offset; v < offset+scan_height_; ++v)
+    Eigen::ArrayXf arrayPointY = Eigen::ArrayXf::LinSpaced(rows, 0, rows-1); 
+    arrayPointY = arrayPointY - cy_d;
+    Eigen::MatrixXf matPointY( arrayPointY.matrix().asDiagonal() ); 
+    matPointY = matPointY*fdepth/ fy_d * (-1);
+    matPointY = matPointY * cos(theta) + fdepth * sin(theta);
+    matPointY = matPointY.array() + 410.0;
+    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> mask1 = matPointY.array()<500; 
+    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> mask2 = matPointY.array()>300; 
+    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> mask3 = matPointY.array()!=410;
+    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> matMaskingHeight = ( mask1.array() * mask2.array() ).matrix();
+    matMaskingHeight = ( matMaskingHeight.array() * mask3.array() ).matrix();
+
+    /*write matrix to csv*/
+    // define the format you want, you only need one instance of this...
+    const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n");
+    writeToCSVfile("/home/ncslaber/matMaskingHeight-2.csv", matMaskingHeight);
+
     for(int v = 0; v < rows; ++v)
     {
-        // cout<<"a";
         if (height_layer.row(v).array().any()) //
         {
             for (int u = 0; u<cols; ++u) // Loop over each pixel in row
@@ -208,15 +191,15 @@ int main(){
                 }
             }
         }
-        // cout<<endl;
+        
     }
 
     for (int i = 0; i < cols; ++i)
     {
         if (i == cols-1)
-            data = (use_point( vector_diffLayer[i], true )) * 0.05; // data in meter
+            data = (use_point( vector_diffLayer[i], true) ) * 0.05; // data in meter
         else
-            data = (use_point( vector_diffLayer[i], false )) * 0.05; // data in meter
+            data = (use_point( vector_diffLayer[i], false) ) * 0.05; // data in meter
         if (data>1e-2)
             scan[i] = data;
         else
@@ -225,7 +208,7 @@ int main(){
     }
 
     std::ofstream newFile;
-    newFile.open("/home/ncslaber/transformed_laserScan_depth-30_heightTest.csv", std::ios::out | std::ios::trunc);
+    newFile.open("/home/ncslaber/transformed_laserScan_depth-2_heightTest.csv", std::ios::out | std::ios::trunc);
     if(!newFile)     
       std::cout << "Can't open file!\n";
     else
