@@ -29,7 +29,7 @@ void read_depth_image(Eigen::MatrixXf& fdepth, int rows, int cols){
     double value;
 
     ifstream inFile;
-	inFile.open("/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth-2.csv");
+	inFile.open("/home/ncslaber/110-1/211009_allLibrary/front-right/syn_rosbag/depth-20.csv");
     // inFile.open("/home/ncslaber/110-1/211010_scanMatching/test.csv");
 	if (inFile.is_open())
 	{
@@ -74,30 +74,30 @@ double use_point( vector<struct gridValueStruct> vec_gridValueStruct, bool flag 
     if (max<4)
         value = (int)( (float)range_max/50+0.5 );
     
-    // std::ofstream inFile;
-    // inFile.open("/home/ncslaber/transformed_laserScan_number-20.csv", std::ios::out | std::ios_base::app);
-    // if(!inFile)     
-    //     std::cout << "Can't open file!\n";
+    std::ofstream inFile;
+    inFile.open("/home/ncslaber/transformed_laserScan_number-20_7090.csv", std::ios::out | std::ios_base::app);
+    if(!inFile)     
+        std::cout << "Can't open file!\n";
     // else
     //   std::cout<<"File open successfully!\n";
-    // if (flag)
-    //     inFile << max ;
-    // else
-    //     inFile << max << ',';
-    // inFile.close();
+    if (flag)
+        inFile << max ;
+    else
+        inFile << max << ',';
+    inFile.close();
 
-    // std::ofstream in2File;
-    // in2File.open("/home/ncslaber/transformed_laserScan_gridValue-20.csv", std::ios::out | std::ios_base::app);
-    // if(!in2File)     
-    // std::cout << "Can't open file!\n";
+    std::ofstream in2File;
+    in2File.open("/home/ncslaber/transformed_laserScan_gridValue-20_7090.csv", std::ios::out | std::ios_base::app);
+    if(!in2File)     
+    std::cout << "Can't open file!\n";
     // else
     //   std::cout<<"File open successfully!\n";
 
-    // if (flag)
-    //     in2File << value ;
-    // else
-    //     in2File << value << ',';
-    // in2File.close();
+    if (flag)
+        in2File << value ;
+    else
+        in2File << value << ',';
+    in2File.close();
     
     return value;
 }
@@ -150,7 +150,7 @@ int main(){
     Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> matMaskingHeight = ( mask1.array() * mask2.array() ).matrix();
     matMaskingHeight = ( matMaskingHeight.array() * mask3.array() ).matrix();
 
-    writeToCSVfile("/home/ncslaber/matMaskingHeight-2.csv", matMaskingHeight);
+    writeToCSVfile("/home/ncslaber/matMaskingHeight-20.csv", matMaskingHeight);
 
     for(int v = 0; v < rows; ++v)
     {
@@ -209,7 +209,7 @@ int main(){
     }
 
     std::ofstream newFile;
-    newFile.open("/home/ncslaber/transformed_laserScan_depth-2_heightTest.csv", std::ios::out | std::ios::trunc);
+    newFile.open("/home/ncslaber/transformed_laserScan_depth-20_heightTest.csv", std::ios::out | std::ios::trunc);
     if(!newFile)     
       std::cout << "Can't open file!\n";
     else
