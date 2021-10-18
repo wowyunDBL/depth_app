@@ -10,6 +10,10 @@
 
 using namespace std;
 
+/*write matrix to csv*/
+// define the format you want, you only need one instance of this...
+const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n");
+
 struct gridValueStruct{
     int gridValue;
     int count;
@@ -98,7 +102,7 @@ double use_point( vector<struct gridValueStruct> vec_gridValueStruct, bool flag 
     return value;
 }
 
-void writeToCSVfile(string name, MatrixXd matrix)
+void writeToCSVfile(string name, Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> matrix)
 {
     ofstream file(name.c_str());
     file << matrix.format(CSVFormat);
@@ -140,24 +144,21 @@ int main(){
     matPointY = matPointY*fdepth/ fy_d * (-1);
     matPointY = matPointY * cos(theta) + fdepth * sin(theta);
     matPointY = matPointY.array() + 410.0;
-    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> mask1 = matPointY.array()<500; 
-    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> mask2 = matPointY.array()>300; 
+    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> mask1 = matPointY.array()<900; 
+    Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> mask2 = matPointY.array()>700; 
     Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> mask3 = matPointY.array()!=410;
     Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> matMaskingHeight = ( mask1.array() * mask2.array() ).matrix();
     matMaskingHeight = ( matMaskingHeight.array() * mask3.array() ).matrix();
 
-    /*write matrix to csv*/
-    // define the format you want, you only need one instance of this...
-    const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n");
     writeToCSVfile("/home/ncslaber/matMaskingHeight-2.csv", matMaskingHeight);
 
     for(int v = 0; v < rows; ++v)
     {
-        if (height_layer.row(v).array().any()) //
+        if (matMaskingHeight.row(v).array().any()) //
         {
             for (int u = 0; u<cols; ++u) // Loop over each pixel in row
             {   
-                if (height_layer(v,u) == true)
+                if (matMaskingHeight(v,u) == true)
                 {
                     r = fdepth(v,u); // r in mm
                     // cout << r <<endl;
