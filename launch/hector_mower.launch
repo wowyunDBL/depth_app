@@ -34,7 +34,7 @@
     <param name="update_factor_occupied"     value="0.9" />   
     <param name="map_update_distance_thresh" value="0.1"/>
     <param name="map_update_angle_thresh"    value="0.04" />
-    <param name="map_pub_period"             value="5" />
+    <param name="map_pub_period"             value="0.5" />
     <param name="laser_z_min_value"          value= "-0.1" />
     <param name="laser_z_max_value"          value= "0.1" />
     <param name="laser_min_dist"             value="0.12" />
@@ -60,10 +60,10 @@
   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
     <remap from="image" to="/camera/depth/image_rect_raw"/>
     <remap from="scan" to="/scan" /> 
-    <param name="scan_height" value="10"/>
+    <param name="scan_height" value="20"/>
     <param name="scan_time" value="0.03"/>
     <param name="range_min" value="0.4"/>
-    <param name="range_max" value="8"/> <!--60/6-->
+    <param name="range_max" value="8.0"/> <!--60/6-->
     <param name="output_frame_id" value="camera_depth_frame"/>
   </node>
   
