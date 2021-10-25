@@ -1,6 +1,6 @@
 <launch>
   <arg name="odom_frame" default="map"/> <!---->
-  <arg name="base_frame" default="base_link"/> <!---->
+  <arg name="base_frame" default="base_link_gps"/> <!---->
   <arg name="scan_subscriber_queue_size" default="5"/>
   <arg name="scan_topic" default="/scan_filtered"/> <!--/scan_filtered-->
   <arg name="map_size" default="2048"/><!--2048-->
@@ -61,10 +61,13 @@
     <remap from="image" to="/camera/depth/image_rect_raw"/>
     <remap from="scan" to="/scan" /> 
     <param name="scan_height" value="20"/>
+    <param name="scan_height_min" value="700"/>
+    <param name="scan_height_max" value="900"/>
     <param name="scan_time" value="0.03"/>
     <param name="range_min" value="0.4"/>
     <param name="range_max" value="8.0"/> <!--60/6-->
     <param name="output_frame_id" value="camera_depth_frame"/>
+    <param name="show_mask" value="true"/>
   </node>
   
   <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">

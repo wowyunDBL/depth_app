@@ -7,14 +7,17 @@
     <remap from="scan" to="/scan" /> 
     <!--The number of pixel rows to use to generate the laserscan.-->
     <param name="scan_height" value="20"/>
+    <param name="scan_height_min" value="700"/>
+    <param name="scan_height_max" value="900"/>
     <!--Time between scans (seconds). Typically, 1.0/frame_rate. -->
 　　<param name="scan_time" value="0.03"/>
     <!--Minimum ranges to return in meters. Ranges less than this will be output as -Inf.-->
-    <param name="range_min" value="0.45"/>
+    <param name="range_min" value="0.4"/>
     <!--Maximum ranges to return in meters. Ranges greater than this will be output as +Inf.-->
-    <param name="range_max" value="7.0"/>
+    <param name="range_max" value="8.0"/>
 
-    <param name="output_frame_id" value="camera_depth_optical_frame"/>
+    <param name="output_frame_id" value="camera_depth_frame"/>
+    <param name="show_mask" value="true"/>
   </node>
   
   <!--point cloud 3D>
