@@ -23,6 +23,10 @@ rosbag record /Altek/color/image_raw/compressed /Altek/depth/camera_info /Altek/
 /camera/color/camera_info /camera/color/image_raw/compressed /camera/depth/camera_info /camera/depth/image_rect_raw
 ```
 
+```
+rosbag filter 2021-10-26-19-00-07.bag lighter_2021-10-26-19-00-07.bag "topic=='/imu_filter/rpy/filtered' or topic=='/outdoor_waypoint_nav/odometry/filtered_map' or topic=='/outdoor_waypoint_nav/odometry/filtered' or topic=='/tf' or topic=='/imu/data' or topic=='/imu/mag' or topic=='/husky_velocity_controller/cmd_vel' or topic=='/gps/qual' or topic=='/navsat/fix'"
+```
+
 ## some utils
 ```
 rosrun rviz rviz -d `rospack find depth_app`/rs.rviz
